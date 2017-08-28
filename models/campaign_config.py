@@ -2,6 +2,7 @@
 from openerp import models, fields, api, _
 import facebook
 
+
 class CampaignConfig(models.Model):
     _name = 'fgcm.campaign.config'
     _order = 'date_release desc, name'
@@ -120,18 +121,16 @@ class LeadGeneratorConfig(models.Model):
         self.ensure_one()
         page_id = self.leadgen_form_id
         leads = self.env.user.get_leads(page_id)
-        data = leads['data']
-        if data:
-            #for lead in data:
-            lead = data[0]
-            leadid = lead['id']
-            print (leadid)
-            leadcreatedtime = lead['created_time']
-            print (leadcreatedtime)
-            lead_field_data = lead['field_data']
-            lead_entry_dict = { fd['name']: fd['values'][0] for fd in lead_field_data }
+        firstleads=leads.next()
 
-        self.write({'test_result': str(leads), 'lead_firstname': lead_entry_dict['first_name'], 'lead_lastname': lead_entry_dict['last_name'], 'lead_email': lead_entry_dict['email']})
+        leadid = firstleads['id']
+        print (leadid)
+        leadcreatedtime = firstleads['created_time']
+        print (leadcreatedtime)
+        lead_field_data = firstleads['field_data']
+        lead_entry_dict = { fd['name']: fd['values'][0] for fd in lead_field_data }
+
+        self.write({'test_result': str(firstleads), 'lead_firstname': lead_entry_dict['first_name'], 'lead_lastname': lead_entry_dict['last_name'], 'lead_email': lead_entry_dict['email']})
 #        inv_line = self.env['fb.lead'].create(entry)
 
     @api.one

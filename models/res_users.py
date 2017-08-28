@@ -25,7 +25,7 @@ class res_users(models.Model):
             return []
 
         access_token = self.oauth_facebook_long_access_token
-        graph = facebook.GraphAPI(access_token=access_token, version=2.7)
+        graph = facebook.GraphAPI(access_token=access_token, version='2.10')
 
         endpoint = '{0}/leadgen_forms'.format(page_id)
         result = graph.get_object(id=endpoint, fields='id, name')
@@ -36,11 +36,10 @@ class res_users(models.Model):
         if not leadgen_form_id:
             return []
         access_token = self.oauth_facebook_long_access_token
-        graph = facebook.GraphAPI(access_token=access_token, version=2.7)
-        # endpoint = '/1857791184537261/leads'
-        # leads = graph.get_object(endpoint)
+        graph = facebook.GraphAPI(access_token=access_token, version='2.10')
 
-        leads = graph.get_connections(id=leadgen_form_id, connection_name='leads')
+        # leads = graph.get_connections(id=leadgen_form_id, connection_name='leads')
+
         # avec gestion des pages (utiliser une version recente de la library)
-        # leads = graph.get_all_connections(id=leadgen_form_id, connection_name='leads')
+        leads = graph.get_all_connections(id=leadgen_form_id, connection_name='leads')
         return leads

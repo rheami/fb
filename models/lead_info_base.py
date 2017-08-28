@@ -71,7 +71,7 @@ class FbLeadBaseInfo(models.Model):
     @api.multi
     def get_leads(self):
         model = self.env['fgcm.leadgen.config']
-        domain = [('name', '=', 'test_form-copy')]
+        domain = [('name', '=', 'test_form-copy')] # todo get name from config
         leadgen_info = model.search(domain)
         if not leadgen_info:
             return
@@ -79,11 +79,8 @@ class FbLeadBaseInfo(models.Model):
         leadgen = leadgen_info[0]
 
         page_id = leadgen.leadgen_form_id
-        leads = self.env.user.get_leads(page_id)
-        data = leads['data']
-        if data:
-            #for lead in data:
-            lead = data[0]
+        leadsgenerator = self.env.user.get_leads(page_id)
+        for lead in leadsgenerator:
             leadid = lead['id']
             print (leadid)
             leadcreatedtime = lead['created_time']
