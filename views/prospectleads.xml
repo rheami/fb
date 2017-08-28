@@ -1,0 +1,175 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <act_window
+            id="campaign_action"
+            name="Campagnes facebook"
+            res_model="fgcm.campaign.config"/>
+
+        <act_window
+            id="leadgen_action"
+            name="Formulaires facebook"
+            res_model="fgcm.leadgen.config"/>
+
+        <act_window
+            id="lead_action"
+            name="Liste des Leads"
+            res_model="fb.lead"/>
+
+        <menuitem
+            id="prospect_leads_menu"
+            name="Propects Leads"
+            parent=""
+            sequence="5"/>
+
+        <menuitem
+            id="menu_prospectleads_config"
+            name="Propects Leads Content"
+            parent="prospect_leads_menu"/>
+
+        <menuitem
+            id="menu_campaign_config"
+            name="Configuration campagne"
+            parent="menu_prospectleads_config"
+            action="campaign_action"
+            sequence="2"/>
+
+        <menuitem
+            id="menu_lead_form_config"
+            name="Configuration formulaire facebook"
+            parent="menu_prospectleads_config"
+            action="leadgen_action"
+            sequence="3"/>
+
+        <menuitem
+            id="menu_lead_result"
+            name="Liste des leads"
+            parent="menu_prospectleads_config"
+            action="lead_action"
+            sequence="4"/>
+
+        <record id="prospect_campaign_view_form" model="ir.ui.view">
+            <field name="name">Prospect campaign Form</field>
+            <field name="model">fgcm.campaign.config</field>
+            <field name="arch" type="xml">
+                <form>
+                    <blockquote>
+                        Configuration de la campagne facebook
+                    </blockquote>
+                    <group>
+                        <field name="name"/>
+                        <field name="pages"/>
+                        <field name="page"/>
+                        <field name="page_id"/>
+                        <field name="leadgen_form_ids" widget="one2many" />
+                        <field name="date_release"/>
+                    </group>
+                    <group>
+                        <field name="create_date"/>
+                        <field name="create_uid"/>
+                        <field name="write_date"/>
+                        <field name="write_uid"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="leadgen_view_form" model="ir.ui.view">
+            <field name="name">Prospect lead Form</field>
+            <field name="model">fgcm.leadgen.config</field>
+            <field name="arch" type="xml">
+
+                <form>
+                    <!--The header tag is built to add buttons within. This puts them at the top -->
+                    <header>
+                    <!--The oe_highlight class gives the button a red color when it is saved.
+                    It is usually used to indicate the expected behaviour. -->
+                    <button string="Get leadgen form id" type="object" name="get_leads" class="oe_highlight"/>
+                    <button string="Clear data" type="object" name="clear_record_data"/>
+                    </header>
+                    <blockquote>
+                        Configuration du formulaire facebook
+                    </blockquote>
+                    <group>
+                        <field name="name"/>
+                        <field name="leadgen_form_id"/>
+                        <field name="campaign_id"/>
+                        <field name="camp_page"/>
+                        <field name="camp_page_id"/>
+                    </group>
+                    <group>
+                        <field name="create_date"/>
+                        <field name="create_uid"/>
+                        <field name="write_date"/>
+                        <field name="write_uid"/>
+                    </group>
+                    <blockquote>
+                        Test
+                    </blockquote>
+                    <group>
+                        <field name="lead_firstname"/>
+                        <field name="lead_lastname"/>
+                        <field name="lead_email"/>
+                        <field name="test_result"/>
+                    </group>
+                </form>
+
+            </field>
+        </record>
+
+        <record id="propect_campaing_view_tree" model="ir.ui.view">
+            <field name="name">Campaign List</field>
+            <field name="model">fgcm.campaign.config</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="date_release"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="propect_leads_view_form" model="ir.ui.view">
+            <field name="name">Leads List</field>
+            <field name="model">fb.lead</field>
+            <field name="arch" type="xml">
+                <form string="Personne">
+                    <group col="4">
+                        <field name="first_name" modifiers="{}"/>
+                        <field name="last_name" modifiers="{}"/>
+                        <field name="email" modifiers="{}"/>
+                        <field name="address1" modifiers="{}"/>
+                        <field name="address2" modifiers="{}"/>
+                        <field name="address3" modifiers="{}"/>
+                        <field name="city" modifiers="{}"/>
+                        <field name="state" modifiers="{}"/>
+                        <field name="country" modifiers="{}"/>
+                        <field name="zip_code" modifiers="{}"/>
+                        <field name="phone_number" modifiers="{}"/>
+                        <field name="signup_date" modifiers="{}"/>
+                        <field name="color" modifiers="{}"/>
+                        <field name="datajson" modifiers="{'readonly': true}"/>
+                    </group>
+                </form>
+            </field>
+        </record>
+
+        <record id="propect_leads_view_tree" model="ir.ui.view">
+            <field name="name">Leads List</field>
+            <field name="model">fb.lead</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <button string="get leads" type="object" name="get_leads" class="oe_highlight"/>
+                    <field name="id"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="city"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+
+    </data>
+</openerp>
