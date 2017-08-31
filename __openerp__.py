@@ -19,6 +19,7 @@ Outil de gestions des campagnes Facebook et vente des leads.
     'depends' : ['sale_stock'],
     'data' : [
         'views/prospectleads.xml',
+        'views/fb_page.xml',
         'views/res_users.xml'
     ],
     'application': True,

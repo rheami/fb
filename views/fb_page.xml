@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_fb_page_form" model="ir.ui.view">
+            <field name="name">fb.page.form</field>
+            <field name="model">fb.page</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+
+                    <group>
+                        <field name="name"/>
+                        <field name="page_id"/>
+                        <field name="camp"/>
+                        <field name="leadgen_ids" widget="one2many"/>
+                    </group>
+
+                </form>
+            </field>
+        </record>
+
+    </data>
+</openerp>
+

@@ -10,7 +10,7 @@
         <act_window
             id="leadgen_action"
             name="Formulaires facebook"
-            res_model="fgcm.leadgen.config"/>
+            res_model="fb.leadgen"/>
 
         <act_window
             id="lead_action"
@@ -19,13 +19,13 @@
 
         <menuitem
             id="prospect_leads_menu"
-            name="Propects Leads"
+            name="Prospect Leads"
             parent=""
             sequence="5"/>
 
         <menuitem
             id="menu_prospectleads_config"
-            name="Propects Leads Content"
+            name="Prospect Leads Content"
             parent="prospect_leads_menu"/>
 
         <menuitem
@@ -37,7 +37,7 @@
 
         <menuitem
             id="menu_lead_form_config"
-            name="Configuration formulaire facebook"
+            name="Liste formulaire facebook"
             parent="menu_prospectleads_config"
             action="leadgen_action"
             sequence="3"/>
@@ -54,71 +54,38 @@
             <field name="model">fgcm.campaign.config</field>
             <field name="arch" type="xml">
                 <form>
-                    <blockquote>
-                        Configuration de la campagne facebook
-                    </blockquote>
+                    <separator string="Configuration de la campagne facebook"/>
+                    <div>
+                        <p>
+                            <label string="When new facebook page with leadgen form are create you must update :"/>
+                            <button type="object" name="update_facebook_pages" string="Update your facebook leadgen form" icon="gtk-execute" class="oe_inline oe_link"/>
+                        </p>
+                    </div>
                     <group>
-                        <field name="name"/>
-                        <field name="pages"/>
-                        <field name="page"/>
-                        <field name="page_id"/>
-                        <field name="leadgen_form_ids" widget="one2many" />
-                        <field name="date_release"/>
+                        <label for="id" string="Titre"/>
+                        <div>
+                            <div>
+                                <field name="name"/>
+                                <field name="leadgen_form" />
+                                <p>
+                                    Choisir le formulaire facebook : nom du formulaire &lt; nom de la page facebook &gt;
+                                </p>
+                                <field name="date_release"/>
+                            </div>
+                        </div>
                     </group>
-                    <group>
-                        <field name="create_date"/>
-                        <field name="create_uid"/>
-                        <field name="write_date"/>
-                        <field name="write_uid"/>
-                    </group>
+                    <separator string="Test"/>
+                    <div>
+                        <p>
+                            <label string="Recuparation de un lead :"/>
+                            <button type="object" name="get_one_lead" string="Get one Lead" class="oe_inline oe_link"/>
+                        </p>
+                    </div>
                 </form>
             </field>
         </record>
 
-        <record id="leadgen_view_form" model="ir.ui.view">
-            <field name="name">Prospect lead Form</field>
-            <field name="model">fgcm.leadgen.config</field>
-            <field name="arch" type="xml">
-
-                <form>
-                    <!--The header tag is built to add buttons within. This puts them at the top -->
-                    <header>
-                    <!--The oe_highlight class gives the button a red color when it is saved.
-                    It is usually used to indicate the expected behaviour. -->
-                    <button string="Get leadgen form id" type="object" name="get_leads" class="oe_highlight"/>
-                    <button string="Clear data" type="object" name="clear_record_data"/>
-                    </header>
-                    <blockquote>
-                        Configuration du formulaire facebook
-                    </blockquote>
-                    <group>
-                        <field name="name"/>
-                        <field name="leadgen_form_id"/>
-                        <field name="campaign_id"/>
-                        <field name="camp_page"/>
-                        <field name="camp_page_id"/>
-                    </group>
-                    <group>
-                        <field name="create_date"/>
-                        <field name="create_uid"/>
-                        <field name="write_date"/>
-                        <field name="write_uid"/>
-                    </group>
-                    <blockquote>
-                        Test
-                    </blockquote>
-                    <group>
-                        <field name="lead_firstname"/>
-                        <field name="lead_lastname"/>
-                        <field name="lead_email"/>
-                        <field name="test_result"/>
-                    </group>
-                </form>
-
-            </field>
-        </record>
-
-        <record id="propect_campaing_view_tree" model="ir.ui.view">
+        <record id="prospect_campaing_view_tree" model="ir.ui.view">
             <field name="name">Campaign List</field>
             <field name="model">fgcm.campaign.config</field>
             <field name="arch" type="xml">
@@ -129,7 +96,7 @@
             </field>
         </record>
 
-        <record id="propect_leads_view_form" model="ir.ui.view">
+        <record id="prospect_leads_view_form" model="ir.ui.view">
             <field name="name">Leads List</field>
             <field name="model">fb.lead</field>
             <field name="arch" type="xml">
@@ -154,7 +121,7 @@
             </field>
         </record>
 
-        <record id="propect_leads_view_tree" model="ir.ui.view">
+        <record id="prospect_leads_view_tree" model="ir.ui.view">
             <field name="name">Leads List</field>
             <field name="model">fb.lead</field>
             <field name="arch" type="xml">
@@ -169,7 +136,6 @@
                 </tree>
             </field>
         </record>
-
 
     </data>
 </openerp>

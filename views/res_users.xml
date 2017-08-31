@@ -9,6 +9,10 @@
             <field name="arch" type="xml">
                 <xpath expr="//page[@string='Access Rights']" position="after">
                     <page string="Oauth facebook user long term token">
+                        <header>
+                            <button string="Update facebook pages" type="object" name="update_facebook_pages" class="oe_highlight"/>
+                            <button string="Clear data" type="object" name="delete_facebook_pages"/>
+                        </header>
                         <group>
                             <field name="oauth_facebook_long_access_token"/>
                         </group>
