@@ -10,15 +10,11 @@ class ResUsers(models.Model):
 
     oauth_facebook_long_access_token = fields.Char('OAuth Long Access Token', copy=False)
 
-    # todo : aller chercher page et les formlead de ces pages et les enregistrers (ajouter bouton mise a jour)
-    # todo : utiliser pour initialiser les selections
     # todo : verifier ajouter seulement les form active
     # todo : log erreur si page plus active
 
     @api.multi
     def update_facebook_pages(self):
-    #def get_fb_pages(self):
-        data_list = []
 
         if self.oauth_facebook_long_access_token:
             graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
@@ -65,7 +61,7 @@ class ResUsers(models.Model):
         graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
 
         endpoint = '{0}/leadgen_forms'.format(page_id)
-        result = graph.get_object(id=endpoint, fields='id, name')
+        result = graph.get_object(id=endpoint, fields='id, name, status')
         data_list = result['data']
         return data_list
 
@@ -73,12 +69,19 @@ class ResUsers(models.Model):
         if not leadgen_form_id or not self.oauth_facebook_long_access_token:
             return []
 
+        # avec gestion des pages ( facebook version 2.10)
         graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
 
+        # 1-Download by Date Range  : 1857791184537261/leads?since=2017-08-28
+        # 2-using from_date and to_date in a POSIX or UNIX time format, expressing the number of seconds since epoch
+        # 3-Download New Leads (since last download) : how to ?
+
+        leads = graph.get_all_connections(id=leadgen_form_id, connection_name='leads')
+
+        # graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=2.7)
         # leads = graph.get_connections(id=leadgen_form_id, connection_name='leads')
 
-        # avec gestion des pages (utiliser une version recente de la library)
-        leads = graph.get_all_connections(id=leadgen_form_id, connection_name='leads')
+
         return leads
 
 

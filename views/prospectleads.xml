@@ -15,7 +15,22 @@
         <act_window
             id="lead_action"
             name="Liste des Leads"
+            res_model="fb.lead.base"/>
+
+        <act_window
+            id="fb_lead_action"
+            name="Liste des FB Leads"
             res_model="fb.lead"/>
+
+        <act_window
+            id="lead_plus_action"
+            name="Liste des Leads plus"
+            res_model="fb.lead.plus"/>
+
+        <act_window
+            id="lead_ref_action"
+            name="Liste des Leads ref"
+            res_model="fb.lead.ref"/>
 
         <menuitem
             id="prospect_leads_menu"
@@ -49,6 +64,20 @@
             action="lead_action"
             sequence="4"/>
 
+        <menuitem
+            id="menu_lead_plus_result"
+            name="Liste des leads plus"
+            parent="menu_prospectleads_config"
+            action="lead_plus_action"
+            sequence="5"/>
+
+        <menuitem
+            id="menu_lead_ref_result"
+            name="Liste des leads ref"
+            parent="menu_prospectleads_config"
+            action="lead_ref_action"
+            sequence="6"/>
+
         <record id="prospect_campaign_view_form" model="ir.ui.view">
             <field name="name">Prospect campaign Form</field>
             <field name="model">fgcm.campaign.config</field>
@@ -77,9 +106,19 @@
                     <separator string="Test"/>
                     <div>
                         <p>
-                            <label string="Recuparation de un lead :"/>
-                            <button type="object" name="get_one_lead" string="Get one Lead" class="oe_inline oe_link"/>
+                            <label string="Test de Recuperation de un lead :"/>
+                            <button type="object" name="get_one_lead" string="Récupérer" class="oe_inline oe_link"/>
+                            <button type="object" name="clear_lead" string="Effacer" class="oe_inline oe_link"/>
                         </p>
+
+                    <field name="lead_firstname"/>
+                    <field name="lead_lastname"/>
+                    <field name="lead_email"/>
+                    <field name="test_result"/>
+                    </div>
+                    <separator string="Pour developpement"/>
+                    <div>
+                        <button string="get leads" type="object" name="get_leads" class="oe_highlight"/>
                     </div>
                 </form>
             </field>
@@ -91,14 +130,15 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
+                    <field name="leadgen_form"/>
                     <field name="date_release"/>
                 </tree>
             </field>
         </record>
 
         <record id="prospect_leads_view_form" model="ir.ui.view">
-            <field name="name">Leads List</field>
-            <field name="model">fb.lead</field>
+            <field name="name">Lead Form</field>
+            <field name="model">fb.lead.base</field>
             <field name="arch" type="xml">
                 <form string="Personne">
                     <group col="4">
@@ -115,7 +155,6 @@
                         <field name="phone_number" modifiers="{}"/>
                         <field name="signup_date" modifiers="{}"/>
                         <field name="color" modifiers="{}"/>
-                        <field name="datajson" modifiers="{'readonly': true}"/>
                     </group>
                 </form>
             </field>
@@ -123,16 +162,57 @@
 
         <record id="prospect_leads_view_tree" model="ir.ui.view">
             <field name="name">Leads List</field>
-            <field name="model">fb.lead</field>
+            <field name="model">fb.lead.base</field>
             <field name="arch" type="xml">
                 <tree>
-                    <button string="get leads" type="object" name="get_leads" class="oe_highlight"/>
                     <field name="id"/>
                     <field name="first_name"/>
                     <field name="last_name"/>
                     <field name="email"/>
                     <field name="city"/>
                     <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="prospect_fb_leads_view_tree" model="ir.ui.view">
+            <field name="name">FB Leads List</field>
+            <field name="model">fb.lead</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="data"/>
+                    <field name="created_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="prospect_fb_lead_ref_view_tree" model="ir.ui.view">
+            <field name="name">Leads Ref List</field>
+            <field name="model">fb.lead.ref</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="lead_base_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="prospect_fb_lead_plus_view_tree" model="ir.ui.view">
+            <field name="name">Leads plus List</field>
+            <field name="model">fb.lead.plus</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="lead_base_id"/>
+                    <field name="name"/>
+                    <field name="value"/>
                 </tree>
             </field>
         </record>
