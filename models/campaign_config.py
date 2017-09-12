@@ -111,6 +111,6 @@ class CampaignConfig(models.Model):
 
         lead_base_id = self.env['fb.lead.base'].create(lead_entry_dict, self.id)
 
-        self.env['fb.lead.ref'].create({'lead_id': leadid, 'campaign_id': self.id, 'lead_base_id': lead_base_id})
+        self.env['fb.lead.ref'].create({'lead_id': leadid, 'campaign_id': self.id, 'lead_base_id': lead_base_id.id})
 
         print lead_entry_dict

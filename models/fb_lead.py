@@ -9,3 +9,6 @@ class FbLead(models.Model):
     data = fields.Char()
     created_time = fields.Char()
 
+    _sql_constraints = [
+        ('lead_id_uniq', 'unique (lead_id)', "Lead id already exists !"),
+    ]

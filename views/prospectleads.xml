@@ -208,7 +208,6 @@
             <field name="arch" type="xml">
                 <tree>
                     <field name="id"/>
-                    <field name="lead_id"/>
                     <field name="campaign_id"/>
                     <field name="lead_base_id"/>
                     <field name="name"/>

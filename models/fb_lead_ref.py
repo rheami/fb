@@ -8,3 +8,6 @@ class FbLeadRef(models.Model):
     campaign_id = fields.Char()
     lead_base_id = fields.Char()
 
+    _sql_constraints = [
+        ('lead_id_uniq', 'unique (lead_id)', "Lead id already exists !"),
+    ]

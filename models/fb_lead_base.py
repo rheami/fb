@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 
-from openerp import models, fields, api, _
 import logging
 
+from openerp import models, fields, api
+
 _logger = logging.getLogger(__name__)
+
 
 class LeadCategory(models.Model):
 
@@ -13,7 +15,6 @@ class LeadCategory(models.Model):
     name = fields.Char(string="Lead Tag", required=True)
     color = fields.Integer(string='Color Index')
 
-    # class odoo.fields.Many2many(comodel_name=<object object>, relation=<object object>, column1=<object object>, column2=<object object>, string=<object object>, **kwargs)
     fb_lead_ids = fields.Many2many('fb.lead', 'fb_lead_category_rel', 'category_id', 'lead_id', string='Leads')
 
     _sql_constraints = [
@@ -31,17 +32,17 @@ class FbLeadBase(models.Model):
     last_name = fields.Char()
     first_name = fields.Char()
 
-    address1 = fields.Char() # ex 123
+    address1 = fields.Char()  # ex 123
     address2 = fields.Char()  # ex vendome
-    address3 = fields.Char() # app
+    address3 = fields.Char()  # app
     city = fields.Char()
-    state = fields.Char() # default = quebec
+    state = fields.Char()  # default = quebec
     # state_id = fields.Many2one("res.country.state", string='State', ondelete='restrict')
-    country = fields.Char() # default = canada
+    country = fields.Char()  # default = canada
     # country_id = fields.Many2one('res.country', string='Country', ondelete='restrict')
     zip_code = fields.Char(change_default=True)
     phone_number = fields.Char('Phone')
-    email = fields.Char() # get facebook email : already validated
+    email = fields.Char()  # get facebook email : already validated
 
     #category_ids = fields.Many2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
     color = fields.Integer('Color Index', default=0)
@@ -49,20 +50,29 @@ class FbLeadBase(models.Model):
     # look for lead, or create one if none is found
     # env['fb.lead'].find_or_create(email_address)
 
+    _sql_constraints = [
+        ('email_uniq', 'unique (email)', "email already exists !"),
+    ]
+
     @api.multi
     def create(self, values, campaign_id, context=None):
         unknown = []
         for key, val in values.iteritems():
             field = self._fields.get(key)
             if not field:
-                # self.env['fb.lead.plus'].create({'campaign_id': campaign_id, 'name':key, 'value':val})
-                unknown.append(key)
+                unknown.append((key, val))
                 values.pop(field, None)
 
-        if unknown:
-            _logger.warning("%s.write() with unknown fields: %s", self._name, ', '.join(sorted(unknown)))
+        record = super(FbLeadBase, self).create(values)
 
+        for (key, val) in unknown:
+            self.env['fb.lead.plus'].create({
+                'lead_base_id': record.id,
+                'campaign_id': campaign_id,
+                'name': key,
+                'value': val})
 
+        return record
 
     # @api.multi
     # def get_leads(self):

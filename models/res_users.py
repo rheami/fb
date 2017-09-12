@@ -11,7 +11,9 @@ class ResUsers(models.Model):
     oauth_facebook_long_access_token = fields.Char('OAuth Long Access Token', copy=False)
 
     # todo : verifier ajouter seulement les form active
-    # todo : log erreur si page plus active
+    # todo : log erreur si page plus active ou si hors de la periode
+
+    # todo : set long term token as short term : login facebook : in a config facebook page
 
     @api.multi
     def update_facebook_pages(self):
