@@ -6,7 +6,7 @@ class FbPages(models.Model):
     _name = 'fb.page'
     name = fields.Char('Page facebook', required=True)
     page_id = fields.Char('Page id facebook', required=True)
-    camp = fields.One2many('fgcm.campaign.config', 'page', 'Campagne', readonly=True)
+    camp = fields.One2many('fb.campaign.config', 'page', 'Campagne', readonly=True)
     leadgen_ids = fields.One2many('fb.leadgen', 'fb_page', string="Formulaire facebook", readonly=False)
 
     _sql_constraints = [

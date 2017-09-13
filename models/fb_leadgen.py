@@ -8,7 +8,7 @@ class FbLeadgen(models.Model):
     page_id = fields.Char('Page id du formulaire facebook', required=True)
     fb_page = fields.Many2one('fb.page', readonly=True)
     fb_page_name = fields.Char(related='fb_page.name', store = True, readonly=True, copy=False, string='Facebook Page')
-    leadgen_form = fields.One2many('fgcm.campaign.config', 'leadgen_form', 'Formulaire de la Campagne', readonly=True)
+    leadgen_form = fields.One2many('fb.campaign.config', 'leadgen_form', 'Formulaire de la Campagne', readonly=True)
     status = fields.Char(string="Status")
 
     _sql_constraints = [

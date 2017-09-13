@@ -3,13 +3,12 @@ from openerp import models, fields, api, _
 
 
 class CampaignConfig(models.Model):
-    _name = 'fgcm.campaign.config'
+    _name = 'fb.campaign.config'
     _order = 'date_release desc, name'
 
     name = fields.Char('Nom de la campagne', required=True)
 
     page = fields.Many2one('fb.page', 'Page facebook', select=True)
-#    page_id = fields.Char('page id')
 
     leadgen_form = fields.Many2one(comodel_name='fb.leadgen', string='Formulaire facebook')
 
@@ -96,21 +95,20 @@ class CampaignConfig(models.Model):
         if not leads:
             return
 
-        firstleads = leads.next() # todo for loop
-        leadid = firstleads['id']
-        leadcreatedtime = firstleads['created_time']
-        lead_field_data = firstleads['field_data']
+        for lead in leads:
+            lead_id = lead['id']
+            leadcreatedtime = lead['created_time']
+            lead_field_data = lead['field_data']
 
-        self.env['fb.lead'].create(
-            {'lead_id': leadid,
-             'campaign_id':self.id,
-             'data': str(firstleads),
-             'created_time':leadcreatedtime})
+            self.env['fb.lead'].create(
+                {'lead_id': lead_id,
+                 'campaign_id':self.id,
+                 'data': str(lead),
+                 'created_time':leadcreatedtime})
 
-        lead_entry_dict = {fd['name']: fd['values'][0] for fd in lead_field_data}
+            lead_entry_dict = {fd['name']: fd['values'][0] for fd in lead_field_data}
 
-        lead_base_id = self.env['fb.lead.base'].create(lead_entry_dict, self.id)
+            lead_base_id = self.env['fb.lead.base'].create(lead_entry_dict, self.id)
 
-        self.env['fb.lead.ref'].create({'lead_id': leadid, 'campaign_id': self.id, 'lead_base_id': lead_base_id.id})
-
-        print lead_entry_dict
+            self.env['fb.lead.ref'].create(
+                {'lead_id': lead_id, 'campaign_id': self.id, 'lead_base_id': lead_base_id.id})
