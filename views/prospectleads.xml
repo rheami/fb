@@ -2,120 +2,36 @@
 <openerp>
     <data>
 
-        <act_window
-            id="campaign_action"
-            name="Campagnes facebook"
-            res_model="fb.campaign.config"/>
-
-        <act_window
-            id="leadgen_action"
-            name="Formulaires facebook"
-            res_model="fb.leadgen"/>
-
-        <act_window
-            id="fb_lead_action"
-            name="Liste des FB Leads"
-            res_model="fb.lead"/>
-
-        <act_window
-            id="lead_action"
-            name="Liste des Leads"
-            res_model="fb.lead.base"/>
-
-        <act_window
-            id="lead_plus_action"
-            name="Specific fields"
-            res_model="fb.lead.child"/>
-
-        <act_window
-            id="lead_ref_action"
-            name="Liste des Leads ref"
-            res_model="fb.lead.ref"/>
-
-        <menuitem
-            id="prospect_leads_menu"
-            name="Prospect Leads"
-            parent=""
-            sequence="5"/>
-
-        <menuitem
-            id="menu_prospectleads_config"
-            name="Prospect Leads Content"
-            parent="prospect_leads_menu"/>
-
-        <menuitem
-            id="menu_campaign_config"
-            name="Configuration campagne"
-            parent="menu_prospectleads_config"
-            action="campaign_action"
-            sequence="2"/>
-
-        <menuitem
-            id="menu_lead_form_config"
-            name="Liste formulaire facebook"
-            parent="menu_prospectleads_config"
-            action="leadgen_action"
-            sequence="3"/>
-
-        <menuitem
-            id="menu_fb_lead_result"
-            name="Liste des leads fb"
-            parent="menu_prospectleads_config"
-            action="fb_lead_action"
-            sequence="4"/>
-
-        <menuitem
-            id="menu_lead_result"
-            name="Liste des leads"
-            parent="menu_prospectleads_config"
-            action="lead_action"
-            sequence="5"/>
-
-        <menuitem
-            id="menu_lead_plus_result"
-            name="Specific fields"
-            parent="menu_prospectleads_config"
-            action="lead_plus_action"
-            sequence="6"/>
-
-        <menuitem
-            id="menu_lead_ref_result"
-            name="Liste des leads ref"
-            parent="menu_prospectleads_config"
-            action="lead_ref_action"
-            sequence="7"/>
-
         <record id="prospect_campaign_view_form" model="ir.ui.view">
             <field name="name">Prospect campaign Form</field>
             <field name="model">fb.campaign.config</field>
             <field name="arch" type="xml">
                 <form>
-                    <separator string="Configuration de la campagne facebook"/>
+                    <group string="Config of the facebook campaign">
+                    <field name="name" string="Campaign"/>
                     <div>
                         <p>
                             <label string="When new facebook page with leadgen form are create you must update :"/>
                             <button type="object" name="update_facebook_pages" string="Update your facebook leadgen form" icon="gtk-execute" class="oe_inline oe_link"/>
                         </p>
                     </div>
-                    <group>
-                        <label for="id" string="Titre"/>
-                        <div>
-                            <div>
-                                <field name="name"/>
-                                <field name="leadgen_form" />
-                                <p>
-                                    Choisir le formulaire facebook : nom du formulaire &lt; nom de la page facebook &gt;
-                                </p>
-                                <field name="date_release"/>
-                            </div>
-                        </div>
+                    </group>
+                    <group string="Leadgen Form">
+                    <div>
+                    <p>
+                        Choose Facebook leadgen form : "name of form &lt; name of facebook page &gt;
+                    </p>
+                    </div><div></div>
+                    <!--<group string="TOTO">-->
+                        <field name="leadgen_form" />
+                        <field name="date_release"/>
                     </group>
                     <separator string="Test"/>
                     <div>
                         <p>
-                            <label string="Test de Recuperation de un lead :"/>
-                            <button type="object" name="get_one_lead" string="Récupérer" class="oe_inline oe_link"/>
-                            <button type="object" name="clear_lead" string="Effacer" class="oe_inline oe_link"/>
+                            <label string="Lead Recovery Test:"/>
+                            <button type="object" name="get_one_lead" string="Get the lead" class="oe_inline oe_link"/>
+                            <button type="object" name="clear_lead" string="Clear" class="oe_inline oe_link"/>
                         </p>
 
                     <field name="lead_firstname"/>
@@ -123,7 +39,7 @@
                     <field name="lead_email"/>
                     <field name="test_result"/>
                     </div>
-                    <separator string="Pour developpement"/>
+                    <separator string="For DEV tests"/>
                     <div>
                         <button string="get leads" type="object" name="get_leads" class="oe_highlight"/>
                     </div>
@@ -150,16 +66,17 @@
                 <form string="Personne">
                     <group col="4">
                         <field name="first_name" modifiers="{}"/>
-                        <field name="last_name" modifiers="{}"/>
                         <field name="email" modifiers="{}"/>
-                        <field name="address1" modifiers="{}"/>
-                        <field name="address2" modifiers="{}"/>
-                        <field name="address3" modifiers="{}"/>
+                        <field name="last_name" modifiers="{}"/>
+                        <field name="address_number" modifiers="{}"/>
+                        <field name="phone_number" modifiers="{}"/>
+                        <field name="address_street" modifiers="{}"/>
+                        <field name="address_app_number" modifiers="{}"/>
                         <field name="city" modifiers="{}"/>
                         <field name="state" modifiers="{}"/>
                         <field name="country" modifiers="{}"/>
                         <field name="zip_code" modifiers="{}"/>
-                        <field name="phone_number" modifiers="{}"/>
+
                         <field name="signup_date" modifiers="{}"/>
                         <field name="color" modifiers="{}"/>
                     </group>
@@ -229,6 +146,112 @@
                 </tree>
             </field>
         </record>
+
+        <record id="view_lead_search" model="ir.ui.view">
+            <field name="name">fb.lead.base.search</field>
+            <field name="model">fb.lead.base</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Lead">
+                    <field name="city" />
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="country"/>
+                </search>
+            </field>
+        </record>
+
+        <act_window
+            id="campaign_action"
+            name="Facebook Campaign"
+            res_model="fb.campaign.config"/>
+
+        <act_window
+            id="leadgen_action"
+            name="Facebook Form"
+            res_model="fb.leadgen"/>
+
+        <act_window
+            id="fb_lead_action"
+            name="Leads"
+            res_model="fb.lead"/>
+
+        <!--<act_window-->
+            <!--id="lead_action"-->
+            <!--name="Liste des Leads"-->
+            <!--res_model="fb.lead.base"-->
+            <!--search_view_id="view_lead_search"/>-->
+
+        <record id="lead_action" model="ir.actions.act_window">
+            <field name="name">Liste des Leads</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fb.lead.base</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="view_lead_search"/>
+        </record>
+
+        <act_window
+            id="lead_plus_action"
+            name="Specific fields"
+            res_model="fb.lead.child"/>
+
+        <act_window
+            id="lead_ref_action"
+            name="Leads ref (for dev)"
+            res_model="fb.lead.ref"/>
+
+        <menuitem
+            id="prospect_leads_menu"
+            name="Prospect Leads"
+            parent=""
+            sequence="5"/>
+
+        <menuitem
+            id="menu_prospectleads_config"
+            name="Prospect Leads Content"
+            parent="prospect_leads_menu"/>
+
+        <menuitem
+            id="menu_campaign_config"
+            name="Campaig Config"
+            parent="menu_prospectleads_config"
+            action="campaign_action"
+            sequence="2"/>
+
+        <menuitem
+            id="menu_lead_form_config"
+            name="Facebook leadgen form"
+            parent="menu_prospectleads_config"
+            action="leadgen_action"
+            sequence="3"/>
+
+        <menuitem
+            id="menu_fb_lead_result"
+            name="Facebook leads (raw data) (for dev only)"
+            parent="menu_prospectleads_config"
+            action="fb_lead_action"
+            sequence="4"/>
+
+        <menuitem
+            id="menu_lead_result"
+            name="Facebook leads"
+            parent="menu_prospectleads_config"
+            action="lead_action"
+            sequence="5"/>
+
+        <menuitem
+            id="menu_lead_plus_result"
+            name="Specific fields"
+            parent="menu_prospectleads_config"
+            action="lead_plus_action"
+            sequence="6"/>
+
+        <menuitem
+            id="menu_lead_ref_result"
+            name="Leads Ref Table (for dev only)"
+            parent="menu_prospectleads_config"
+            action="lead_ref_action"
+            sequence="7"/>
 
     </data>
 </openerp>

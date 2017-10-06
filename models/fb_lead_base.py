@@ -25,30 +25,29 @@ class LeadCategory(models.Model):
 class FbLeadBase(models.Model):
 
     _name = "fb.lead.base"
-    _description = "Personne"
     _order = 'last_name'
 
     signup_date = fields.Date('Signup Date')
-    last_name = fields.Char()
-    first_name = fields.Char()
+    last_name = fields.Char('Last Name')
+    first_name = fields.Char('First Name')
 
-    address1 = fields.Char()  # ex 123
-    address2 = fields.Char()  # ex vendome
-    address3 = fields.Char()  # app
-    city = fields.Char()
-    state = fields.Char()
-    country = fields.Char()
-    zip_code = fields.Char(change_default=True)
+    address_number = fields.Char()
+    address_street = fields.Char('Street')
+    address_app_number = fields.Char()
+
+    city = fields.Char('City')
+    state = fields.Char('State')
+    country = fields.Char('Country')
+    zip_code = fields.Char('Zip Code')
     phone_number = fields.Char('Phone')
-    email = fields.Char()
+    email = fields.Char('Email')
     lead_child_ids = fields.One2many('fb.lead.child', 'parent_id',
                                 'Specific fields')
 
-
-    #category_ids = fields.Many2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
+    # todo category_ids = fields.Many2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
     color = fields.Integer('Color Index', default=0)
 
-    # look for lead, or create one if none is found
+    # todo look for lead, or create one if none is found
     # env['fb.lead'].find_or_create(email_address)
 
     _sql_constraints = [
@@ -65,16 +64,9 @@ class FbLeadBase(models.Model):
                          'name': key,
                          'value': val}
                 specific_fields.append((0,0,child))
-                values.pop(field, None)
+                values.pop(field, None) # doesn't work !
 
         values['lead_child_ids'] = specific_fields
         record = super(FbLeadBase, self).create(values)
-
-        # for (key, val) in other_field:
-        #     self.env['fb.lead.plus'].create({
-        #         'lead_base_id': record.id,
-        #         'campaign_id': campaign_id,
-        #         'name': key,
-        #         'value': val})
 
         return record

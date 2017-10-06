@@ -6,26 +6,26 @@ class CampaignConfig(models.Model):
     _name = 'fb.campaign.config'
     _order = 'date_release desc, name'
 
-    name = fields.Char('Nom de la campagne', required=True)
+    name = fields.Char('Campaign Name', required=True)
 
-    page = fields.Many2one('fb.page', 'Page facebook', select=True)
+    page = fields.Many2one('fb.page', 'Facebook Page', select=True)
 
-    leadgen_form = fields.Many2one(comodel_name='fb.leadgen', string='Formulaire facebook')
+    leadgen_form = fields.Many2one(comodel_name='fb.leadgen', string='Facebook Leadgen Form')
 
     leadgen_form_id = fields.Char('leadgen form id', store=True)  # todo onchange + required=True)
 
     date_release = fields.Date('Release Date')
     # state : definir : todo demarer les pull lorsque actif
-    state = fields.Selection([('configpage', 'ConfigurationPage'),
-                              ('configform', 'ConfigurationFormulaire'),
-                              ('configdone', 'Ready'),
-                              ],
-                             'State')
+    # state = fields.Selection([('configpage', 'ConfigurationPage'),
+    #                           ('configform', 'ConfigurationFormulaire'),
+    #                           ('configdone', 'Ready'),
+    #                           ],
+    #                          'State')
 
     # pour test
-    lead_firstname = fields.Char(readonly=True, copy=False, string='Prenom')
-    lead_lastname = fields.Char(readonly=True, copy=False, string='Nom')
-    lead_email = fields.Char(readonly=True, copy=False, string='Courriel')
+    lead_firstname = fields.Char(readonly=True, copy=False, string='Firstname')
+    lead_lastname = fields.Char(readonly=True, copy=False, string='Name')
+    lead_email = fields.Char(readonly=True, copy=False, string='Email')
     test_result = fields.Char(readonly=True, copy=False, string='Result')
 
     @api.multi

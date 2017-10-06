@@ -12,7 +12,6 @@
                     <group>
                         <field name="name"/>
                         <field name="page_id"/>
-                        <field name="camp"/>
                         <field name="leadgen_ids" widget="one2many"/>
                     </group>
 

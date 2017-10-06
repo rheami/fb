@@ -16,7 +16,7 @@ Outil de gestions des campagnes Facebook et vente des leads.
     'website': '',
     'author': 'Michel Rheault, Osha',
     'license': 'AGPL-3',
-    'depends' : ['sale_stock'],
+    # 'depends' : ['sale_stock'],
     'data' : [
         'views/prospectleads.xml',
         'views/fb_page.xml',

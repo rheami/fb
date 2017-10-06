@@ -8,11 +8,9 @@ res_users.USER_PRIVATE_FIELDS.append('oauth_facebook_long_access_token')
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
-    oauth_facebook_long_access_token = fields.Char('OAuth Long Access Token', copy=False)
+    oauth_facebook_long_access_token = fields.Char('OAuth Facebook Long Term Access Token', copy=False)
 
-    # todo : verifier ajouter seulement les form active
     # todo : log erreur si page plus active ou si hors de la periode
-
     # todo : set long term token as short term : login facebook : in a config facebook page
 
     @api.multi
@@ -36,7 +34,7 @@ class ResUsers(models.Model):
                 result = graph.get_object(id=endpoint, fields='id, name')
 
                 # if having form then create fb.page
-                if result :
+                if result:
                     fb_page = self.env['fb.page'].create(page)
 
                     # then create fb.leadgen
@@ -71,7 +69,7 @@ class ResUsers(models.Model):
         if not leadgen_form_id or not self.oauth_facebook_long_access_token:
             return []
 
-        # avec gestion des pages ( facebook version 2.10)
+        # using new library : ( work with facebook version 2.10)
         graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
 
         # 1-Download by Date Range  : 1857791184537261/leads?since=2017-08-28
@@ -80,11 +78,8 @@ class ResUsers(models.Model):
 
         leads = graph.get_all_connections(id=leadgen_form_id, connection_name='leads')
 
+        # using old library
         # graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=2.7)
         # leads = graph.get_connections(id=leadgen_form_id, connection_name='leads')
 
-
         return leads
-
-
-
