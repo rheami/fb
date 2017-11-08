@@ -2,47 +2,69 @@ from openerp import models, fields, api
 from openerp.addons.base.res import res_users
 import facebook
 
+# todo should be accessible to user in group facebook admin
 res_users.USER_PRIVATE_FIELDS.append('oauth_facebook_long_access_token')
+res_users.USER_PRIVATE_FIELDS.append('oauth_facebook_short_access_token')
+res_users.USER_PRIVATE_FIELDS.append('facebook_username')
+res_users.USER_PRIVATE_FIELDS.append('facebook_app_id')
+res_users.USER_PRIVATE_FIELDS.append('facebook_app_secret')
 
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
 
     oauth_facebook_long_access_token = fields.Char('OAuth Facebook Long Term Access Token', copy=False)
+    oauth_facebook_short_access_token = fields.Char('OAuth Facebook Short Term Access Token', copy=False)
+    facebook_username = fields.Char('Facebook user name', copy=False)
+    facebook_app_id = fields.Char('App id', copy=False)
+    facebook_app_secret = fields.Char('App secret', copy=False)
 
-    # todo : log erreur si page plus active ou si hors de la periode
-    # todo : set long term token as short term : login facebook : in a config facebook page
+    @api.multi
+    def get_facebook_long_access_token(self):
+
+        if self.oauth_facebook_short_access_token:
+            graph = facebook.GraphAPI(access_token=self.oauth_facebook_short_access_token, version='2.10')
+            res = graph.extend_access_token(self.facebook_app_id, self.facebook_app_secret)
+            if res:
+                tok = res['access_token']
+                if tok:
+                    self.oauth_facebook_long_access_token = tok
+        return
 
     @api.multi
     def update_facebook_pages(self):
 
-        if self.oauth_facebook_long_access_token:
-            graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
-            endpoint = 'me/accounts'
-            result = graph.get_object(id=endpoint, fields='id,name')
-            page_list = result['data']
+        # GET https://graph.facebook.com/v2.9/me/accounts?fields=leadgen_forms{name,status,leads_count,question_page_custom_headline,questions,qualifiers},name
 
-            # remove all
-            self.delete_facebook_pages()
+        if self.oauth_facebook_long_access_token:
+            graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
+            endpoint = 'me/accounts'
+            result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count,questions},name')
+            page_list = result['data']
 
             for page in page_list:
                 fb_page_id = page['id']
 
                 page['page_id'] = page.pop('id')
 
-                endpoint = '{0}/leadgen_forms'.format(fb_page_id)
-                result = graph.get_object(id=endpoint, fields='id, name')
+                #endpoint = '{0}/leadgen_forms'.format(fb_page_id)
+                #result = graph.get_object(id=endpoint, fields='id, name')
 
-                # if having form then create fb.page
-                if result:
+                fb_page = self.env['fb.page'].search([('page_id', '=', fb_page_id)])
+                if fb_page:
+                    # update
+                    fb_page.write(page)
+
+                else:
+                    # insert
                     fb_page = self.env['fb.page'].create(page)
 
-                    # then create fb.leadgen
-                    leadgen_list = result['data']
-                    for leadgen in leadgen_list:
-                        leadgen['page_id'] = leadgen.pop('id')
-                        leadgen['fb_page'] = fb_page.id
-                        self.env['fb.leadgen'].create(leadgen)
+                # then create fb.leadgen_form
+                leadgen_forms = page['leadgen_forms']['data'] # todo prendre en compte le paging (si plus de 25 leadgen_form)
+                for leadgen_form in leadgen_forms:
+                    leadgen_form['leadgen_form_id'] = leadgen_form.pop('id')
+                    leadgen_form['fb_page_id'] = fb_page_id
+                    self.env['fb.leadgen_form'].create(leadgen_form) # todo : verifier si existe ou utiliser contrainte sql
         return
 
     @api.multi
@@ -58,7 +80,7 @@ class ResUsers(models.Model):
         if not page_id or not self.oauth_facebook_long_access_token:
             return []
 
-        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
+        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
 
         endpoint = '{0}/leadgen_forms'.format(page_id)
         result = graph.get_object(id=endpoint, fields='id, name, status')
@@ -70,7 +92,7 @@ class ResUsers(models.Model):
             return []
 
         # using new library : ( work with facebook version 2.10)
-        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.10')
+        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
 
         # 1-Download by Date Range  : 1857791184537261/leads?since=2017-08-28
         # 2-using from_date and to_date in a POSIX or UNIX time format, expressing the number of seconds since epoch

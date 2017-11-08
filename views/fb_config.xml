@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="view_fb_config_form" model="ir.ui.view">
+            <field name="name">fb.config.form</field>
+            <field name="model">res.users</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+                    <notebook>
+
+                    <page string="Oauth facebook user long term token">
+                        <header>
+                            <button string="Update facebook pages" type="object" name="update_facebook_pages" />
+                        </header>
+                    </page>
+                    </notebook>
+                </form>
+            </field>
+        </record>
+
+        <record id="facebook_config_action" model="ir.actions.act_window">
+            <field name="name">Facebook Config</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">res.users</field>
+            <field name="view_type">form</field>
+            <field name="view_id" ref="view_fb_config_form"/>
+        </record>
+
+        <menuitem name="Configuration Facebook Campaigns" id="base.menu_fb_marketing_config_root" parent="base.marketing_menu" sequence="30"/>
+        <menuitem name="Facebook" id="facebook_configuration" parent="base.menu_fb_marketing_config_root" action="facebook_config_action"/>
+
+    </data>
+</openerp>
+

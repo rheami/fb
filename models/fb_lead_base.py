@@ -41,8 +41,12 @@ class FbLeadBase(models.Model):
     zip_code = fields.Char('Zip Code')
     phone_number = fields.Char('Phone')
     email = fields.Char('Email')
-    lead_child_ids = fields.One2many('fb.lead.child', 'parent_id',
-                                'Specific fields')
+    lead_child_ids = fields.One2many(
+        comodel_name="fb.lead.child",
+        inverse_name="parent_id",
+        string="Specific fields",
+        #required=True,
+        help="Fields used in a specific campains")
 
     # todo category_ids = fields.Many2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
     color = fields.Integer('Color Index', default=0)

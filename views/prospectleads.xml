@@ -176,12 +176,6 @@
             name="Leads"
             res_model="fb.lead"/>
 
-        <!--<act_window-->
-            <!--id="lead_action"-->
-            <!--name="Liste des Leads"-->
-            <!--res_model="fb.lead.base"-->
-            <!--search_view_id="view_lead_search"/>-->
-
         <record id="lead_action" model="ir.actions.act_window">
             <field name="name">Liste des Leads</field>
             <field name="type">ir.actions.act_window</field>
@@ -200,11 +194,12 @@
             name="Leads ref (for dev)"
             res_model="fb.lead.ref"/>
 
+        <!--todo : ajouter au menu marketing au lieu de rajouter ce menu-->
         <menuitem
             id="prospect_leads_menu"
             name="Prospect Leads"
             parent=""
-            sequence="5"/>
+            sequence="240"/>
 
         <menuitem
             id="menu_prospectleads_config"
@@ -213,7 +208,7 @@
 
         <menuitem
             id="menu_campaign_config"
-            name="Campaig Config"
+            name="Campaign Config"
             parent="menu_prospectleads_config"
             action="campaign_action"
             sequence="2"/>

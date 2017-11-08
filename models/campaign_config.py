@@ -11,6 +11,7 @@ class CampaignConfig(models.Model):
     page = fields.Many2one('fb.page', 'Facebook Page', select=True)
 
     leadgen_form = fields.Many2one(comodel_name='fb.leadgen', string='Facebook Leadgen Form')
+    category = fields.Many2one(comodel_name='fb.campaign.category', string='Category', select=True)
 
     leadgen_form_id = fields.Char('leadgen form id', store=True)  # todo onchange + required=True)
 
