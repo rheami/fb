@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="prospect_fb_leads_view_tree" model="ir.ui.view">
+            <field name="name">FB Leads List</field>
+            <field name="model">fb.lead</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="data"/>
+                    <field name="created_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="prospect_fb_lead_ref_view_tree" model="ir.ui.view">
+            <field name="name">Leads Ref List</field>
+            <field name="model">fb.lead.ref</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="lead_base_id"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="prospect_fb_lead_plus_view_tree" model="ir.ui.view">
+            <field name="name">Leads specific fields</field>
+            <field name="model">fb.lead.child</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="campaign_id"/>
+                    <field name="parent_id"/>
+                    <field name="name"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <act_window name="Facebook forms" id="leadgen_action" res_model="fb.leadgen_form"/>
+        <act_window name="Facebook pages" id="fb_page_action" res_model="fb.page"/>
+        <act_window name="Leads" id="fb_lead_action" res_model="fb.lead"/>
+        <act_window name="Specific fields" id="lead_child_action" res_model="fb.lead.child"/>
+        <act_window name="Leads ref" id="lead_ref_action" res_model="fb.lead.ref"/>
+
+        <menuitem name="Debug Facebook Campaigns" id="fb_marketing_debug_root" parent="base.marketing_menu" sequence="30"/>
+        <menuitem name="Facebook leadgen forms"   id="leadgen_form_config"     parent="fb_marketing_debug_root"
+                  action="leadgen_action"/>
+        <menuitem name="Facebook pages"           id="lead_form_config"        parent="fb_marketing_debug_root"
+                  action="fb_page_action"/>
+        <menuitem name="Facebook leads"           id="fb_lead"                 parent="fb_marketing_debug_root"
+                  action="fb_lead_action"/>
+        <menuitem name="Specific fields"          id="menu_lead_child"         parent="fb_marketing_debug_root"
+                  action="lead_child_action"/>
+        <menuitem name="Leads Ref Table"          id="menu_lead_ref"           parent="fb_marketing_debug_root"
+                  action="lead_ref_action"/>
+
+    </data>
+</openerp>

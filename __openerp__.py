@@ -18,6 +18,7 @@ Outil de gestions des campagnes Facebook et vente des leads.
     'license': 'AGPL-3',
     # 'depends' : ['sale_stock'],
     'data' : [
+        'views/debug.xml',
         'views/fb_config.xml',
         'views/prospectleads.xml',
         'views/fb_page.xml',

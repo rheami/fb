@@ -15,6 +15,12 @@ class FbPages(models.Model):
         readonly=False,
         help="Leadgen_Forms of the Facebook Page")
 
+    def create(self, vals):
+        return super(FbPages, self).create(vals)
+
+    def write(self, vals):
+        return super(FbPages, self).write(vals)
+
     _sql_constraints = [
         ('fb_id_uniq', 'unique(page_id)', 'The id of the Facebook page must be unique !'),
     ]

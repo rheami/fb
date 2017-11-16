@@ -8,5 +8,4 @@ class FbLeadChild(models.Model):
     campaign_id = fields.Char()
     name = fields.Char()
     value = fields.Char()
-    parent_id = fields.Many2one('fb.lead.base', 'Related Lead')
-    lead_id = fields.Char(related='parent_id.email')
+    parent_id = fields.Many2one('fb.lead.base', 'Related Lead', ondelete='cascade', required=True)

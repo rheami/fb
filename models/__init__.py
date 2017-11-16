@@ -1,6 +1,7 @@
 # -*- coding: utf-8 -*-
 # License AGPL-3.0 or later (http://www.gnu.org/licenses/agpl.html).
 
+from . import fb_config
 from . import campaign_config
 from . import fb_lead
 from . import fb_lead_base
