@@ -67,7 +67,7 @@ class ResUsers(models.Model):
     @api.multi
     def delete_facebook_pages(self):
         self.env["fb.page"].search([]).unlink()
-        recs = self.env["fb.campaign.config"].search([])
+        recs = self.env["fb.campaign"].search([])
         for rec in recs:
             rec.leadgen_form = False
 

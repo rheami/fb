@@ -4,27 +4,12 @@
 
         <record id="prospect_fb_leads_view_tree" model="ir.ui.view">
             <field name="name">FB Leads List</field>
-            <field name="model">fb.lead</field>
+            <field name="model">fb.lead.data</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="id"/>
-                    <field name="lead_id"/>
-                    <field name="campaign_id"/>
                     <field name="data"/>
                     <field name="created_time"/>
-                </tree>
-            </field>
-        </record>
-
-        <record id="prospect_fb_lead_ref_view_tree" model="ir.ui.view">
-            <field name="name">Leads Ref List</field>
-            <field name="model">fb.lead.ref</field>
-            <field name="arch" type="xml">
-                <tree>
-                    <field name="id"/>
-                    <field name="lead_id"/>
-                    <field name="campaign_id"/>
-                    <field name="lead_base_id"/>
                 </tree>
             </field>
         </record>
@@ -34,19 +19,59 @@
             <field name="model">fb.lead.child</field>
             <field name="arch" type="xml">
                 <tree>
-                    <field name="campaign_id"/>
-                    <field name="parent_id"/>
+                    <field name="lead_ref_id"/>
                     <field name="name"/>
                     <field name="value"/>
                 </tree>
             </field>
         </record>
 
+        <record id="fb_leads_ref_view_list" model="ir.ui.view">
+            <field name="name">fb_leads_ref_view_list</field>
+            <field name="model">fb.lead.ref</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="leadgen_form_id"/>
+                    <field name="lead_base_id"/>
+                    <field name="lead_child_ids"/>
+                    <field name="created_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <!--<record id="fb_leads_ref_view_form" model="ir.ui.view">-->
+            <!--<field name="name">fb_leads_ref_view_form</field>-->
+            <!--<field name="model">fb.lead.ref</field>-->
+            <!--<field name="inherit_id" ref="base.view_model_form"/>-->
+            <!--<field name="arch" type="xml">-->
+                <!--<form string="lead ref">-->
+                    <!--<field name="lead_id"/>-->
+                    <!--<field name="campaign_id" />-->
+                    <!--<field name="leadgen_form_id" />-->
+                    <!--<field name="lead_data_id"/>-->
+                    <!--<field name="created_time"/>-->
+                    <!--&lt;!&ndash;<field name="lead_child_ids" colspan="4" nolabel="1">&ndash;&gt;-->
+                        <!--&lt;!&ndash;<form>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="name"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="value"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</form>&ndash;&gt;-->
+                        <!--&lt;!&ndash;<tree string="Specific fields" create="false" delete="false" editable="false">&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="name"/>&ndash;&gt;-->
+                            <!--&lt;!&ndash;<field name="value"/>&ndash;&gt;-->
+                        <!--&lt;!&ndash;</tree>&ndash;&gt;-->
+                    <!--&lt;!&ndash;</field>&ndash;&gt;-->
+                <!--</form>-->
+            <!--</field>-->
+        <!--</record>-->
+
+        <act_window name="lead_ref_action" id="lead_ref_action" res_model="fb.lead.ref"/>
         <act_window name="Facebook forms" id="leadgen_action" res_model="fb.leadgen_form"/>
         <act_window name="Facebook pages" id="fb_page_action" res_model="fb.page"/>
-        <act_window name="Leads" id="fb_lead_action" res_model="fb.lead"/>
+        <act_window name="Leads data" id="fb_lead_action" res_model="fb.lead.data"/>
         <act_window name="Specific fields" id="lead_child_action" res_model="fb.lead.child"/>
-        <act_window name="Leads ref" id="lead_ref_action" res_model="fb.lead.ref"/>
 
         <menuitem name="Debug Facebook Campaigns" id="fb_marketing_debug_root" parent="base.marketing_menu" sequence="30"/>
         <menuitem name="Facebook leadgen forms"   id="leadgen_form_config"     parent="fb_marketing_debug_root"

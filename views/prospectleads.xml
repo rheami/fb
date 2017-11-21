@@ -4,19 +4,18 @@
 
         <record id="prospect_campaign_view_form" model="ir.ui.view">
             <field name="name">Prospect campaign Form</field>
-            <field name="model">fb.campaign.config</field>
+            <field name="model">fb.campaign</field>
             <field name="arch" type="xml">
                 <form>
                     <group string="Config of the facebook campaign">
-                    <field name="name" string="Campaign"/>
+                        <field name="name" string="Campaign"/>
                     </group>
                     <group string="Leadgen Form">
-                    <div>
-                    <p>
-                        Choose Facebook leadgen form : "name of form &lt; name of facebook page &gt;
-                    </p>
-                    </div><div></div>
-                    <!--<group string="TOTO">-->
+                        <div>
+                            <p>
+                                Choose Facebook leadgen form : "name of form &lt; name of facebook page &gt;
+                            </p>
+                        </div>
                         <field name="leadgen_form" />
                         <field name="date_release"/>
                     </group>
@@ -27,11 +26,10 @@
                             <button type="object" name="get_one_lead" string="Get the lead" class="oe_inline oe_link"/>
                             <button type="object" name="clear_lead" string="Clear" class="oe_inline oe_link"/>
                         </p>
-
-                    <field name="lead_firstname"/>
-                    <field name="lead_lastname"/>
-                    <field name="lead_email"/>
-                    <field name="test_result"/>
+                        <field name="lead_firstname"/>
+                        <field name="lead_lastname"/>
+                        <field name="lead_email"/>
+                        <field name="test_result"/>
                     </div>
                     <separator string="For DEV tests"/>
                     <div>
@@ -43,7 +41,7 @@
 
         <record id="prospect_campaing_view_tree" model="ir.ui.view">
             <field name="name">Campaign List</field>
-            <field name="model">fb.campaign.config</field>
+            <field name="model">fb.campaign</field>
             <field name="arch" type="xml">
                 <tree>
                     <field name="name"/>
@@ -71,10 +69,12 @@
                         <field name="signup_date" readonly="1"/>
                         <field name="state" readonly="1"/>
                     </group>
-                    <field name="lead_child_ids">
+
+                    <field name="lead_ref_ids">
                         <tree string="Specific fields" create="false" delete="false" editable="false">
-                            <field name="name"/>
-                            <field name="value"/>
+                            <field name="lead_id"/>
+                            <field name="campaign_id"/>
+                            <field name="leadgen_form_id"/>
                         </tree>
                     </field>
                 </form>
@@ -122,10 +122,7 @@
             </field>
         </record>
 
-
-        <act_window name="Facebook Campaign" id="campaign_action" res_model="fb.campaign.config"/>
-        <act_window name="Leads" id="fb_lead_action" res_model="fb.lead"/>
-
+        <act_window id="campaign_action" name="Facebook Campaign" res_model="fb.campaign"/>
         <record id="lead_action" model="ir.actions.act_window">
             <field name="name">Liste des Leads</field>
             <field name="type">ir.actions.act_window</field>

@@ -10,20 +10,23 @@ DATETIME_LENGTH = len(datetime.now().strftime(DATETIME_FORMAT))
 _logger = logging.getLogger(__name__)
 
 
-class CampaignConfig(models.Model):
-    _name = 'fb.campaign.config'
+class FbCampaign(models.Model):
+    _name = 'fb.campaign'
     _order = 'date_release desc, name'
 
     name = fields.Char('Campaign Name', required=True)
-
-    page = fields.Many2one('fb.page', 'Facebook Page', select=True)
-
     leadgen_form = fields.Many2one(comodel_name='fb.leadgen_form', string='Facebook Leadgen Form')
+    # todo add to leadgen_forms_id so we can other form to leadgen_form_ids
+
     #category = fields.Many2one(comodel_name='fb.campaign.category', string='Category', select=True)
-
-    leadgen_form_id = fields.Char('leadgen form id', store=True)  # todo onchange + required=True)
-
     date_release = fields.Date('Release Date')
+
+    lead_ref_ids = fields.One2many(
+        comodel_name='fb.lead.ref',
+        inverse_name='campaign_id',
+        string='leads associate to the facebook campaign',
+        readonly=True)
+
     # state : definir : todo demarer les pull lorsque actif
     # state = fields.Selection([('configpage', 'ConfigurationPage'),
     #                           ('configform', 'ConfigurationFormulaire'),
@@ -37,11 +40,11 @@ class CampaignConfig(models.Model):
     lead_email = fields.Char(readonly=True, copy=False, string='Email')
     test_result = fields.Char(readonly=True, copy=False, string='Result')
 
-    @api.multi
-    @api.onchange("leadgen_form")
-    def _set_leadgen_form_id(self):
-        for r in self:
-            r.leadgen_form_id = r.leadgen_form.leadgen_form_id
+    # @api.multi
+    # @api.onchange("leadgen_form")
+    # def _set_leadgen_form_id(self):
+    #     for r in self:
+    #         r.leadgen_form_id = r.leadgen_form.leadgen_form_id
 
     @api.one
     def update_facebook_pages(self):
@@ -110,16 +113,10 @@ class CampaignConfig(models.Model):
                 lastLeadCreated = lead_created_epoch
             lead_field_data = lead['field_data']
 
-            fb_lead = self.env['fb.lead'].search([('lead_id', '=', lead_id)])
-            if fb_lead :
+            fb_lead_ref = self.env['fb.lead.ref'].search([('lead_id', '=', lead_id)])
+            if fb_lead_ref :
                 _logger.warning("Lead deja present")
                 continue
-
-            self.env['fb.lead'].create(
-                {'lead_id': lead_id,
-                 'campaign_id':self.id,
-                 'data': str(lead),
-                 'created_time':lead_created_time})
 
             lead_entry_dict = {fd['name']: fd['values'][0] for fd in lead_field_data}
             email = lead_entry_dict['email']
@@ -130,10 +127,13 @@ class CampaignConfig(models.Model):
             else:
                 lead_entry_dict['state'] = 'validate'
 
-            lead_base = self.env['fb.lead.base'].create(lead_entry_dict, self.id)
+            ref_values_dict = {'lead_id': lead_id,
+                               'campaign_id': self.id,
+                               'leadgen_form_id': self.leadgen_form.id,
+                               'data': str(lead),
+                               'created_time': lead_created_time}
 
-            self.env['fb.lead.ref'].create(
-                {'lead_id': lead_id, 'campaign_id': self.id, 'lead_base_id': lead_base.id})
+            lead_base = self.env['fb.lead.base'].create(lead_entry_dict, ref_values_dict)
 
         # update lastLeadCreated
         if lastLeadCreated > self.leadgen_form.lastLeadCreated:
