@@ -20,7 +20,7 @@ Outil de gestions des campagnes Facebook et vente des leads.
     'data' : [
         'views/debug.xml',
         'views/fb_config.xml',
-        'views/prospectleads.xml',
+        'views/fb_leads.xml',
         'views/fb_page.xml',
         'views/res_users.xml'
     ],

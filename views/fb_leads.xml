@@ -67,15 +67,27 @@
                         <field name="country" readonly="1"/>
                         <field name="post_code" readonly="1"/>
                         <field name="signup_date" readonly="1"/>
-                        <field name="state" readonly="1"/>
+                        <field name="state" />
                     </group>
-
-                    <field name="lead_ref_ids">
-                        <tree string="Specific fields" create="false" delete="false" editable="false">
-                            <field name="lead_id"/>
-                            <field name="campaign_id"/>
-                            <field name="leadgen_form_id"/>
-                        </tree>
+                    <field colspan="4" name="lead_ref_ids" nolabel="1" widget="one2many_list">
+                        <form string="lead ref info">
+                            <group col="4">
+                                <field name="id" string="lead_ref_id"/>
+                                <field name="lead_id"/>
+                                <field name="campaign_id"/>
+                                <field name="leadgen_form_id"/>
+                                <field name="created_time"/>
+                            </group>
+                        </form>
+                    </field>
+                    <field colspan="4" name="lead_child_ids" nolabel="1" widget="one2many_list">
+                        <form string="Specific fields">
+                            <group col="4">
+                                <field name="lead_ref_id" />
+                                <field name="name" />
+                                <field name="value" />
+                            </group>
+                        </form>
                     </field>
                 </form>
             </field>
@@ -85,7 +97,7 @@
             <field name="name">Leads List</field>
             <field name="model">fb.lead.base</field>
             <field name="arch" type="xml">
-                <tree colors="red:state == 'duplicate';black:state == 'validate';green:state == 'qualified'" editable="bottom" string="toto">
+                <tree colors="red:state == 'duplicate';black:state == 'validate';green:state == 'qualified'" create="false" delete="false">
                     <field name="id"/>
                     <field name="first_name"/>
                     <field name="last_name"/>

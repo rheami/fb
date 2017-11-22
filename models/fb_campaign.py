@@ -34,7 +34,7 @@ class FbCampaign(models.Model):
     #                           ],
     #                          'State')
 
-    # pour test
+    # pour test todo : placer dans un wizard
     lead_firstname = fields.Char(readonly=True, copy=False, string='Firstname')
     lead_lastname = fields.Char(readonly=True, copy=False, string='Name')
     lead_email = fields.Char(readonly=True, copy=False, string='Email')

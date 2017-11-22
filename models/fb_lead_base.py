@@ -40,13 +40,22 @@ class FbLeadBase(models.Model):
     phone_number = fields.Char('Phone')
     email = fields.Char('Email')
 
-    # todo category_ids = fields.Many2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
+    # todo state = fields.One2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
     state = fields.Char('state')  # LeadCategory  : duplicate , validate or qualified
     lead_ref_ids = fields.One2many(
         comodel_name='fb.lead.ref',
         inverse_name='lead_base_id',
         string='leads parents',
         readonly=True)
+    lead_child_ids = fields.One2many(
+        comodel_name='fb.lead.child', string=u"Lead Childs", compute='_compute_childs_ids')
+
+    @api.multi
+    @api.depends('lead_ref_ids')
+    def _compute_childs_ids(self):
+        for record in self:
+            toto = self.lead_ref_ids.mapped('lead_child_ids')
+            record.lead_child_ids = toto.ids
 
     @api.multi
     def create(self, values, ref_values_dict,  context=None):
