@@ -1,9 +1,11 @@
 # -*- coding: utf-8 -*-
 from openerp import models, fields, api, _
 from openerp import exceptions
-
 import logging
+
+FACEBOOK_VERSION = '2.9'
 _logger = logging.getLogger(__name__)
+
 
 class FacebookConfig(models.TransientModel):
     _name = 'fb.config'

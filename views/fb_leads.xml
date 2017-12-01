@@ -102,7 +102,14 @@
                     <field name="first_name"/>
                     <field name="last_name"/>
                     <field name="email"/>
+                    <field name="phone_number"/>
+                    <field name="street_address"/>
                     <field name="city"/>
+                    <field name="province"/>
+                    <field name="country"/>
+                    <field name="post_code"/>
+                    <field name="lead_ref_ids"/>
+                    <field name="state"/>
                     <field name="state"/>
                 </tree>
             </field>
@@ -114,10 +121,11 @@
             <field name="priority" eval="8"/>
             <field name="arch" type="xml">
                 <search string="Lead">
-                    <field name="city" />
-                    <field name="last_name"/>
-                    <field name="email"/>
-                    <field name="country"/>
+                    <field name="name" string="Name" filter_domain="['|', ('first_name','ilike',self), ('last_name','ilike',self)]"/>
+                    <field name="email" string="Email" filter_domain="[('email','ilike',self)]"/>
+                    <field name="province" string="State" filter_domain="[('state','ilike',self)]"/>
+                    <field name="country" />
+                    <field string="Campaign" name="lead_ref_ids" filter_domain="[('lead_ref_ids.campaign_id.name','ilike',self)]"/>
                     <filter string="Dupplicate" name="dupplicate" help="Show Dupplicate Leads"
                             domain="[('state', 'ilike', 'dup')]"/>
                     <filter string="Validate" name="validate" help="Show leads to validate"
@@ -128,7 +136,8 @@
                     <group expand="1" string="Group By">
                         <filter string="Type" name="state" domain="[]" context="{'group_by':'state'}"/>
                         <!--<filter string="Formulaire" name="state" domain="[]" context="{'group_by':'state'}"/>-->
-                        <!--<filter string="Campagne" name="state" domain="[]" context="{'group_by':'state'}"/>-->
+                        <filter string="Campagne" name="lead_ref_ids" domain="[]" context="{'group_by':'lead_ref_ids.campaign_id'}"/>
+                        <filter name="group_by_date" string="Date" domain="[]" context="{'group_by':'created_time'}"/>
                     </group>
                 </search>
             </field>
@@ -144,8 +153,10 @@
         </record>
 
         <menuitem name="Facebook Campaigns" id="fb_marketing_root" parent="base.marketing_menu" sequence="30"/>
-        <menuitem name="Campaign Config" id="menu_campaign_config" parent="fb_marketing_config_root" action="campaign_action"/>
-        <menuitem name="Facebook leads"  id="menu_lead_result"     parent="fb_marketing_root"        action="lead_action"/>
+        <menuitem name="Campaign Config" id="menu_campaign_config" parent="fb_marketing_config_root"
+                  action="campaign_action"/>
+        <menuitem name="Facebook leads"  id="menu_lead_result"     parent="fb_marketing_root"
+                  action="lead_action"/>
 
     </data>
 </openerp>

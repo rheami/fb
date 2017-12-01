@@ -2,15 +2,16 @@ from openerp import models, fields, api
 from openerp.addons.base.res import res_users
 from openerp.exceptions import except_orm, Warning, RedirectWarning
 import facebook
+from fb_config import FACEBOOK_VERSION
+import logging
 
-
+_logger = logging.getLogger(__name__)
 # todo should be accessible to user in group facebook admin
 res_users.USER_PRIVATE_FIELDS.append('oauth_facebook_long_access_token')
 res_users.USER_PRIVATE_FIELDS.append('oauth_facebook_short_access_token')
 res_users.USER_PRIVATE_FIELDS.append('facebook_username')
 res_users.USER_PRIVATE_FIELDS.append('facebook_app_id')
 res_users.USER_PRIVATE_FIELDS.append('facebook_app_secret')
-
 
 class ResUsers(models.Model):
     _inherit = 'res.users'
@@ -25,7 +26,7 @@ class ResUsers(models.Model):
     def get_facebook_long_access_token(self):
 
         if self.oauth_facebook_short_access_token:
-            graph = facebook.GraphAPI(access_token=self.oauth_facebook_short_access_token, version='2.10')
+            graph = facebook.GraphAPI(access_token=self.oauth_facebook_short_access_token, version=FACEBOOK_VERSION)
 
             try:
                 res = graph.extend_access_token(self.facebook_app_id, self.facebook_app_secret)
@@ -42,7 +43,7 @@ class ResUsers(models.Model):
         # GET https://graph.facebook.com/v2.9/me/accounts?fields=leadgen_forms{name,status,leads_count,question_page_custom_headline,questions,qualifiers},name
 
         if self.oauth_facebook_long_access_token:
-            graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
+            graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
             endpoint = 'me/accounts'
             # result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count,questions},name')
             result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count},name')
@@ -75,9 +76,10 @@ class ResUsers(models.Model):
 
     def get_leadgen_forms(self, page_id):
         if not page_id or not self.oauth_facebook_long_access_token:
-            return [] # todo log
+            _logger.debug('Oauth facebook setting are not set or no page access')
+            return []
 
-        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
+        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
 
         endpoint = '{0}/leadgen_forms'.format(page_id)
         result = graph.get_object(id=endpoint, fields='id, name, status')
@@ -86,14 +88,13 @@ class ResUsers(models.Model):
 
     def get_leads(self, leadgen_form_id, last_get=0):
         if not leadgen_form_id or not self.oauth_facebook_long_access_token:
-            return [] # todo log
+            _logger.debug('Oauth facebook setting are not set or no leadgen form access')
+            return []
 
-        # using new library : ( work with facebook version 2.10)
-        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version='2.9')
+        # using new library : ( work with facebook version 2.9 et +)
+        graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
 
-        #last_get = 1510704000
         filtering = 'filtering=[{{"field": "time_created", "operator": "GREATER_THAN", "value":{0}}}]'.format(last_get)
         connection_name = '{0}/?{1}'.format('leads', filtering)
         leads = graph.get_all_connections(id=leadgen_form_id, connection_name=connection_name)
-        # filtering = [{"field": "time_created", "operator": "GREATER_THAN", "value": 1510704000}]
         return leads

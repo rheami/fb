@@ -46,11 +46,13 @@ class FbCampaign(models.Model):
     #     for r in self:
     #         r.leadgen_form_id = r.leadgen_form.leadgen_form_id
 
+    # todo : placer dans un wizard
     @api.one
     def update_facebook_pages(self):
         self.ensure_one()
         self.env.user.update_facebook_pages()
 
+    # todo : placer dans un wizard
     @api.one
     def delete_facebook_pages(self):
         self.ensure_one()
@@ -75,6 +77,7 @@ class FbCampaign(models.Model):
             else:
                 continue
 
+    # todo : placer dans un wizard
     @api.one
     def get_one_lead(self):
         self.ensure_one()
@@ -93,6 +96,7 @@ class FbCampaign(models.Model):
         except:
             self.write({'test_result': "No Leads found"})
 
+    # todo : placer dans un wizard
     @api.one
     def clear_lead(self):
         self.ensure_one()
@@ -119,20 +123,13 @@ class FbCampaign(models.Model):
                 continue
 
             lead_entry_dict = {fd['name']: fd['values'][0] for fd in lead_field_data}
-            email = lead_entry_dict['email']
-            lead_base = self.env['fb.lead.base'].search([('email', '=', email)])
-            if lead_base :
-                lead_base.write({'state': 'duplicate'})
-                lead_entry_dict['state'] = 'duplicate'
-            else:
-                lead_entry_dict['state'] = 'validate'
-
             ref_values_dict = {'lead_id': lead_id,
                                'campaign_id': self.id,
                                'leadgen_form_id': self.leadgen_form.id,
                                'data': str(lead),
                                'created_time': lead_created_time}
 
+            lead_entry_dict['created_time'] = lead_created_time
             lead_base = self.env['fb.lead.base'].create(lead_entry_dict, ref_values_dict)
 
         # update lastLeadCreated

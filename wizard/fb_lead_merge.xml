@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+        <record id="fb_lead_merge" model="ir.ui.view">
+            <field name="name">fb lead merge</field>
+            <field name="model">fb.lead.merge</field>
+            <field name="arch" type="xml">
+                <form string="Hi i am wizard">
+
+                    <div class="oe_right">
+                        <button class="oe_highlight" type="object" name="do_merge"
+                                string="Merge"
+                                attrs="{'invisible': [('lead','=',False)]}"
+                        />
+                    </div>
+                    <field name="lead"/>
+
+                    <!--<field name="lead_dup_ids1" options="{'no_create': True}"/>-->
+                    <field name="lead_dup_ids1">
+                        <tree>
+                            <field name="id"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                            <field name="phone_number"/>
+                            <field name="street_address"/>
+                            <field name="city"/>
+                            <field name="province"/>
+                            <field name="country"/>
+                            <field name="post_code"/>
+                            <field name="lead_ref_ids"/>
+                            <field name="state"/>
+                        </tree>
+                        <form>
+                            <field name="id"/>
+                            <field name="first_name"/>
+                            <field name="last_name"/>
+                            <field name="email"/>
+                            <field name="phone_number"/>
+                            <field name="street_address"/>
+                            <field name="city"/>
+                            <field name="province"/>
+                            <field name="country"/>
+                            <field name="post_code"/>
+                            <field name="lead_ref_ids"/>
+                            <field name="state"/>
+                        </form>
+                    </field>
+                    <field name="lead_dup_ids2" options="{'no_create': True}"/>
+                    <footer>
+                        <button name="create_request" 
+                            string="Finished" type="object" 
+                            class="btn-primary"/>
+                        <button string="Cancel" 
+                            class="btn-default" 
+                            special="cancel" />
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <record id="lead_merge_action" model="ir.actions.act_window">
+            <field name="name">Management of duplicate</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fb.lead.merge</field>
+            <field name="view_type">form</field>
+            <field name="view_mode">form</field>
+            <field name="view_id" ref="fb_lead_merge"/>
+            <field name="target">new</field>
+        </record>
+
+        <menuitem name="Remove dup leads" id="menu_lead_merge" parent="fb_marketing_root"
+                  action="lead_merge_action"/>
+    </data>
+</openerp>

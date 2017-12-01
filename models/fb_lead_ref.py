@@ -17,16 +17,22 @@ class FbLeadRef(models.Model):
         string="Specific fields",
         help="Fields related to a specific Facebook Leadgen Form")
 
-
-
-    # pour joindre deux leadbases :
-    # 1 changer le lead_base_id pour celui que l'on garde : foreach ref in base to delete set base to keep
-    # 2 effacer l<autre leadbase
-    # 3 set state tovalidate if no other dupplicate of this lead
-
     _sql_constraints = [
         ('lead_id_uniq', 'unique (lead_id)', "Lead id already exists !"),
     ]
+
+    # @api.multi # todo ne marche pas tout le temps !
+    # def unlink(self):
+    #     base_ids = [r.lead_base_id for r in self]
+    #     data_ids = [r.lead_data_id for r in self]
+    #
+    #     result = super(FbLeadRef, self).unlink()
+    #     if result:
+    #         for r in base_ids:
+    #             r.unlink()
+    #         for r in data_ids:
+    #             r.unlink()
+    #     return result
 
     @api.multi
     def create(self, values,  context=None):
