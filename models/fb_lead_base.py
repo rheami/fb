@@ -6,8 +6,6 @@ import re
 _logger = logging.getLogger(__name__)
 
 
-
-
 class LeadCategory(models.Model):
 
     _name = "fb.lead.category"
@@ -72,11 +70,10 @@ class FbLeadBase(models.Model):
     def create(self, values, ref_values_dict,  context=None):
         email = values.pop('email', None)
 
-        # set pattern format to keep alphanumerics, underscore and minus
-        pattern = re.compile(r'[^\w\s-]', re.U)  #
+        # set pattern format to keep alphanumerics, dot, underscore, minus , trait long et court
+        pattern = re.compile(ur'[^\.\_\w\s\u2014\u2013-]', re.U)
 
         base_fields = {k: re.sub(pattern, '', v) for k, v in values.items() if self._fields.get(k)}
-        base_fields['email'] = email
 
         specific_fields = [(0, 0, {'name': k, 'value': values[k]}) for k, v in values.items()
                            if not self._fields.get(k)]
@@ -98,14 +95,17 @@ class FbLeadBase(models.Model):
             state = 'validate'
 
         base_fields['state'] = state
+        base_fields['email'] = email
 
-        record = super(FbLeadBase, self).create(base_fields)
         ref_values_dict['lead_child_ids'] = specific_fields
 
         if merge:
             ref_values_dict['lead_base_id'] = merge.id
+            record = merge
         else:
+            record = super(FbLeadBase, self).create(base_fields)
             ref_values_dict['lead_base_id'] = record.id
 
-        self.env['fb.lead.ref'].create(ref_values_dict)
+            self.env['fb.lead.ref'].create(ref_values_dict)
+
         return record
