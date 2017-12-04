@@ -12,11 +12,15 @@ Facebook Leads
 ==============
 
 Outil de gestions des campagnes Facebook et vente des leads.
+
+Dépendances : facebook-sdk version 3 : 
+pip install -e git+https://github.com/mobolic/facebook-sdk.git#egg=facebook-sdk
+
         """,
     'website': '',
     'author': 'Michel Rheault, Osha',
     'license': 'AGPL-3',
-    # 'depends' : ['sale_stock'],
+    'depends' : ['auth_oauth'],
     'data' : [
         'views/debug.xml',
         'views/fb_config.xml',
