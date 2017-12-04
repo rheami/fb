@@ -21,18 +21,16 @@ class FbLeadRef(models.Model):
         ('lead_id_uniq', 'unique (lead_id)', "Lead id already exists !"),
     ]
 
-    # @api.multi # todo ne marche pas tout le temps !
-    # def unlink(self):
-    #     base_ids = [r.lead_base_id for r in self]
-    #     data_ids = [r.lead_data_id for r in self]
-    #
-    #     result = super(FbLeadRef, self).unlink()
-    #     if result:
-    #         for r in base_ids:
-    #             r.unlink()
-    #         for r in data_ids:
-    #             r.unlink()
-    #     return result
+    @api.multi
+    def unlink(self):
+        base_ids = [r.lead_base_id.id for r in self if r.lead_base_id.lead_ref_ids == r]
+        data_ids = [r.lead_data_id.id for r in self]
+
+        result = super(FbLeadRef, self).unlink()
+        if result:
+            base_ids.unlink()
+            data_ids.unlink()
+        return result
 
     @api.multi
     def create(self, values,  context=None):
