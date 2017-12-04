@@ -8,13 +8,21 @@ class FbLeadMerge(models.TransientModel):
     _name = "fb.lead.merge"
 
     lead = fields.Many2one(comodel_name='fb.lead.base', string='select lead',
-                           default=lambda self: self.env['fb.lead.base'].search([('state', 'ilike', 'dup')])[0],
+                           default='_get_default',
                            domain="[('state', 'ilike', 'dup')]")
     email = fields.Char(related="lead.email")
     lead_dup_ids1 = fields.Many2many(comodel_name='fb.lead.base', string='lead chosen for merge',
                                      default=lambda self: self.env['fb.lead.base'].search([('id', '=', self.lead.id)]))
     lead_dup_ids2 = fields.Many2many(comodel_name='fb.lead.base', string='dup leads',
     default = lambda self: self.env['fb.lead.base'].search([('email', '=', self.email), ('id', '!=', self.lead.id)]))
+
+    @api.model
+    def _get_default(self):
+        res = self.env['fb.lead.base'].search([('state', 'ilike', 'dup')])
+        if res :
+            return res[0]
+        else:
+            return False
 
     @api.multi
     @api.onchange('lead')
