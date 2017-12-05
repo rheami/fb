@@ -3,7 +3,7 @@ import logging
 from datetime import date, datetime
 import time
 
-from openerp import models, fields, api
+from openerp import models, fields, api, exceptions, _
 
 DATETIME_FORMAT = '%Y-%m-%dT%H:%M:%S' # facebook format
 DATETIME_LENGTH = len(datetime.now().strftime(DATETIME_FORMAT))
@@ -82,9 +82,9 @@ class FbCampaign(models.Model):
     def get_one_lead(self):
         self.ensure_one()
         leadgen_form_id = self.leadgen_form.leadgen_form_id
-        leads = self.env.user.get_leads(leadgen_form_id)
 
         try:
+            leads = self.env.user.get_leads(leadgen_form_id)
             first_leads = leads.next()
             leadid = first_leads['id']
             leadcreatedtime = first_leads['created_time']
@@ -93,7 +93,10 @@ class FbCampaign(models.Model):
 
             self.write({'test_result': str(first_leads), 'lead_firstname': lead_entry_dict['first_name'],
                         'lead_lastname': lead_entry_dict['last_name'], 'lead_email': lead_entry_dict['email']})
-        except:
+        except exceptions.ValidationError, exceptions.ValidationError.message:
+            error_msg = 'Oauth facebook setting are not set or no leadgen form access'
+            self.write({'test_result': error_msg})
+        except Exception, e:
             self.write({'test_result': "No Leads found"})
 
     # todo : placer dans un wizard
@@ -119,7 +122,7 @@ class FbCampaign(models.Model):
 
             fb_lead_ref = self.env['fb.lead.ref'].search([('lead_id', '=', lead_id)])
             if fb_lead_ref :
-                _logger.warning("Lead deja present")
+                _logger.warning("Lead already there")
                 continue
 
             lead_entry_dict = {fd['name']: fd['values'][0] for fd in lead_field_data}
@@ -129,7 +132,6 @@ class FbCampaign(models.Model):
                                'data': str(lead),
                                'created_time': lead_created_time}
 
-            lead_entry_dict['created_time'] = lead_created_time
             lead_base = self.env['fb.lead.base'].create(lead_entry_dict, ref_values_dict)
 
         # update lastLeadCreated

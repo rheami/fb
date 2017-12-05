@@ -22,14 +22,14 @@ class FbLeadRef(models.Model):
     ]
 
     @api.multi
-    def unlink(self):
-        base_ids = [r.lead_base_id.id for r in self if r.lead_base_id.lead_ref_ids == r]
-        data_ids = [r.lead_data_id.id for r in self]
+    def unlink(self): # todo
+        # base_ids = [r.lead_base_id.id for r in self if r.lead_base_id.lead_ref_ids == r]
+        # data_ids = [r.lead_data_id.id for r in self]
 
         result = super(FbLeadRef, self).unlink()
-        if result:
-            base_ids.unlink()
-            data_ids.unlink()
+        # if result:
+        #     base_ids.unlink()
+        #     data_ids.unlink()
         return result
 
     @api.multi

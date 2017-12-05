@@ -1,6 +1,5 @@
-from openerp import models, fields, api
 from openerp.addons.base.res import res_users
-from openerp.exceptions import except_orm, Warning, RedirectWarning
+from openerp import models, fields, api, exceptions, _
 import facebook
 from fb_config import FACEBOOK_VERSION
 import logging
@@ -76,8 +75,9 @@ class ResUsers(models.Model):
 
     def get_leadgen_forms(self, page_id):
         if not page_id or not self.oauth_facebook_long_access_token:
-            _logger.debug('Oauth facebook setting are not set or no page access')
-            return []
+            error_msg='Oauth facebook setting are not set or no page access'
+            _logger.error(error_msg)
+            raise exceptions.ValidationError(_(error_msg))
 
         graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
 
@@ -88,10 +88,11 @@ class ResUsers(models.Model):
 
     def get_leads(self, leadgen_form_id, last_get=0):
         if not leadgen_form_id or not self.oauth_facebook_long_access_token:
-            _logger.debug('Oauth facebook setting are not set or no leadgen form access')
-            return []
+            error_msg='Oauth facebook setting are not set or no leadgen form access'
+            _logger.error(error_msg)
+            raise exceptions.ValidationError(_(error_msg))
 
-        # using new library : ( work with facebook version 2.9 et +)
+        # using facebook_sdk version 3 : ( work with facebook version 2.9 et +)
         graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
 
         filtering = 'filtering=[{{"field": "time_created", "operator": "GREATER_THAN", "value":{0}}}]'.format(last_get)

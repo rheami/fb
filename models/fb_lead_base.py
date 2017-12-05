@@ -80,14 +80,14 @@ class FbLeadBase(models.Model):
 
         # todo a tester rendu ici
         lead_dup_ids = self.env['fb.lead.base'].search([('email', '=', email)])
-        merge = lead_dup_ids
+        merge = False
         if lead_dup_ids:
             state = 'duplicate'
-            for dup in lead_dup_ids:
-                dup_fields={k: v for k, v in values.items() if dup._fields.get(k)}
+            for record in lead_dup_ids:
+                dup_fields={k: record._fields[k].convert_to_read(record[k], True) for k in base_fields.keys()}
                 if dup_fields == base_fields:
-                    merge = dup
-                    if len(lead_dup_ids == 1):
+                    merge = True
+                    if len(lead_dup_ids) == 1:
                         state = 'validate'
                     break # only one merge is plausible
             lead_dup_ids.write({'state': state})
@@ -100,8 +100,7 @@ class FbLeadBase(models.Model):
         ref_values_dict['lead_child_ids'] = specific_fields
 
         if merge:
-            ref_values_dict['lead_base_id'] = merge.id
-            record = merge
+            ref_values_dict['lead_base_id'] = record.id
         else:
             record = super(FbLeadBase, self).create(base_fields)
             ref_values_dict['lead_base_id'] = record.id

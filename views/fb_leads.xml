@@ -23,7 +23,11 @@
                     <div>
                         <p>
                             <label string="Lead Recovery Test:"/>
-                            <button type="object" name="get_one_lead" string="Get the lead" class="oe_inline oe_link"/>
+                            <button name="get_one_lead" string="Get the lead"
+                                    class="oe_inline oe_link"
+                                    type="object" />
+                                    <!--attrs="{'invisible': [('state','=',False)]}"-->
+
                             <button type="object" name="clear_lead" string="Clear" class="oe_inline oe_link"/>
                         </p>
                         <field name="lead_firstname"/>
@@ -110,7 +114,6 @@
                     <field name="post_code"/>
                     <field name="lead_ref_ids"/>
                     <field name="state"/>
-                    <field name="state"/>
                 </tree>
             </field>
         </record>
@@ -125,7 +128,12 @@
                     <field name="email" string="Email" filter_domain="[('email','ilike',self)]"/>
                     <field name="province" string="State" filter_domain="[('state','ilike',self)]"/>
                     <field name="country" />
+                    <field name="post_code" string="Zip Code" filter_domain="[('post_code','ilike',self)]"/>
+                    <field name="phone_number" string="Phone" filter_domain="[('phone_number','ilike',self)]"/>
+
                     <field string="Campaign" name="lead_ref_ids" filter_domain="[('lead_ref_ids.campaign_id.name','ilike',self)]"/>
+                    <field string="LeadGen Form" name="lead_ref_ids" filter_domain="[('lead_ref_ids.leadgen_form_id.name','ilike',self)]"/>
+
                     <filter string="Dupplicate" name="dupplicate" help="Show Dupplicate Leads"
                             domain="[('state', 'ilike', 'dup')]"/>
                     <filter string="Validate" name="validate" help="Show leads to validate"

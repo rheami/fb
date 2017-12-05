@@ -8,21 +8,12 @@ class FbLeadMerge(models.TransientModel):
     _name = "fb.lead.merge"
 
     lead = fields.Many2one(comodel_name='fb.lead.base', string='select lead',
-                           default='_get_default',
                            domain="[('state', 'ilike', 'dup')]")
     email = fields.Char(related="lead.email")
     lead_dup_ids1 = fields.Many2many(comodel_name='fb.lead.base', string='lead chosen for merge',
                                      default=lambda self: self.env['fb.lead.base'].search([('id', '=', self.lead.id)]))
     lead_dup_ids2 = fields.Many2many(comodel_name='fb.lead.base', string='dup leads',
     default = lambda self: self.env['fb.lead.base'].search([('email', '=', self.email), ('id', '!=', self.lead.id)]))
-
-    @api.model
-    def _get_default(self):
-        res = self.env['fb.lead.base'].search([('state', 'ilike', 'dup')])
-        if res :
-            return res[0]
-        else:
-            return False
 
     @api.multi
     @api.onchange('lead')
@@ -41,6 +32,7 @@ class FbLeadMerge(models.TransientModel):
     @api.multi
     def do_merge(self):
         self.ensure_one()
+
         _logger.debug('merging leads')
         # pour joindre deux(ou +) lead_base:
         # 1 copier touts les lead_ref_ids dans le lead_base que l'on garde:
@@ -61,8 +53,11 @@ class FbLeadMerge(models.TransientModel):
 
         # else stay on the wizard
 
-        #self.lead = res[0]
+        self.lead = res[0]
         #self.on_change_lead()  # force change
+        self.lead_dup_ids1 = {}
+        self.lead_dup_ids1 += self.lead
+        self.lead_dup_ids2 = self.env['fb.lead.base'].search([('email', '=', self.email), ('id', '!=', self.lead.id)])
 
         return {
             'type': 'ir.actions.act_window',
