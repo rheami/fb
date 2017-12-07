@@ -21,6 +21,7 @@ pip install -e git+https://github.com/mobolic/facebook-sdk.git#egg=facebook-sdk
     'author': 'Michel Rheault, Osha',
     'license': 'AGPL-3',
     'depends' : ['auth_oauth'],
+    'external_dependencies': {'python': ['facebook']},
     'data' : [
         'views/debug.xml',
         'views/fb_config.xml',

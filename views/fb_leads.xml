@@ -60,6 +60,15 @@
             <field name="model">fb.lead.base</field>
             <field name="arch" type="xml">
                 <form>
+                    <header>
+                        <button string="Set to validate" type="object" name="validate_progressbar" attrs="{'invisible': [('state', '=', 'validate')]}"/>
+                        <button string="Set to qualified" type="object" name="qualified_progressbar" class="oe_highlight" attrs="{'invisible': ['|', ('state','=','qualified'), ('state','=','rejected')]}"/>
+                        <button string="Set to duplicate" type="object" name="duplicate_progressbar" attrs="{'invisible': ['|', ('state','=','duplicate'), ('state','=','qualified')]}"/>
+                        <button string="Set to rejected" type="object" name="rejected_progressbar" attrs="{'invisible': ['|', ('state','=','rejected'), ('state','=','qualified')]}"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="validate,qualified,duplicate,rejected"
+                               statusbar_colors='{"rejected_progressbar":"red","validate_progressbar":"blue", "qualified_progressbar":"blue", "duplicate_progressbar":"blue"}'/>
+                    </header>
                     <group col="4">
                         <field name="first_name" readonly="1"/>
                         <field name="email" readonly="1"/>
@@ -71,7 +80,6 @@
                         <field name="country" readonly="1"/>
                         <field name="post_code" readonly="1"/>
                         <field name="signup_date" readonly="1"/>
-                        <field name="state" />
                     </group>
                     <field colspan="4" name="lead_ref_ids" nolabel="1" widget="one2many_list">
                         <form string="lead ref info">
@@ -101,7 +109,7 @@
             <field name="name">Leads List</field>
             <field name="model">fb.lead.base</field>
             <field name="arch" type="xml">
-                <tree colors="red:state == 'duplicate';black:state == 'validate';green:state == 'qualified'" create="false" delete="false">
+                <tree colors="red:state == 'duplicate';grey:state == 'rejected';black:state == 'validate';green:state == 'qualified'" delete="false">
                     <field name="id"/>
                     <field name="first_name"/>
                     <field name="last_name"/>
@@ -134,12 +142,14 @@
                     <field string="Campaign" name="lead_ref_ids" filter_domain="[('lead_ref_ids.campaign_id.name','ilike',self)]"/>
                     <field string="LeadGen Form" name="lead_ref_ids" filter_domain="[('lead_ref_ids.leadgen_form_id.name','ilike',self)]"/>
 
-                    <filter string="Dupplicate" name="dupplicate" help="Show Dupplicate Leads"
-                            domain="[('state', 'ilike', 'dup')]"/>
+                    <filter string="Duplicate" name="duplicate" help="Show duplicates"
+                            domain="[('state', '=', 'duplicate')]"/>
                     <filter string="Validate" name="validate" help="Show leads to validate"
-                            domain="[('state', 'ilike', 'val')]"/>
+                            domain="[('state', '=', 'validate')]"/>
                     <filter string="Qualified" name="qualified" help="Show Qualified Leads"
-                            domain="[('state', 'ilike', 'qua')]"/>
+                            domain="[('state', '=', 'qualified')]"/>
+                    <filter string="Rejected" name="rejected" help="Show Rejected Leads"
+                            domain="[('state', '=', 'rejected')]"/>>
                     <separator/>
                     <group expand="1" string="Group By">
                         <filter string="Type" name="state" domain="[]" context="{'group_by':'state'}"/>

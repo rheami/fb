@@ -20,9 +20,6 @@ class LeadCategory(models.Model):
         ('name_uniq', 'unique (name)', "Tag name already exists !"),
     ]
 
-def equal_dicts(a, b, ignore_keys):
-    ka = set(a).difference(ignore_keys)
-    return all(a[k] == b[k] for k in ka)
 
 class FbLeadBase(models.Model):
 
@@ -42,17 +39,49 @@ class FbLeadBase(models.Model):
     post_code = fields.Char('Zip Code')
     phone_number = fields.Char('Phone')
     email = fields.Char('Email')
-    #created_time = fields.Date('LastModifiedDate') # todo _get_LastModifiedDate prend la date la + recente selon la liste lead_ref.created_time
 
-    # todo state = fields.One2many('fb.lead.category', '_category_rel', '_id', 'category_id', string='Tags')
-    state = fields.Char('state')  # LeadCategory  : duplicate , validate or qualified
+    state = fields.Selection([
+        ('validate', 'Validate'),
+        ('duplicate', 'Duplicate'),
+        ('qualified', 'Qualified'),
+        ('rejected', 'Rejected'),
+    ], default='validate', string='Status', readonly=True, copy=False, help="Gives the status of the leads.\
+              \nThe exception status is automatically set when a cancel operation occurs \
+              in the invoice validation (Invoice Exception) or in the picking list process (Shipping Exception).\nThe 'Waiting Schedule' status is set when the invoice is confirmed\
+               but waiting for the scheduler to run on the order date.", select=True)
+
     lead_ref_ids = fields.One2many(
         comodel_name='fb.lead.ref',
         inverse_name='lead_base_id',
         string='leads parents',
         readonly=True)
+
     lead_child_ids = fields.One2many(
         comodel_name='fb.lead.child', string=u"Lead Childs", compute='_compute_childs_ids')
+
+    @api.one
+    def validate_progressbar(self):
+        self.write({
+            'state': 'validate',
+        })
+
+    @api.one
+    def duplicate_progressbar(self):
+        self.write({
+            'state': 'duplicate'
+        })
+
+    @api.one
+    def qualified_progressbar(self):
+        self.write({
+            'state': 'qualified'
+        })
+
+    @api.one
+    def rejected_progressbar(self):
+        self.write({
+            'state': 'rejected',
+        })
 
     @api.depends('email', 'last_name', 'first_name')
     def _compute_name(self):

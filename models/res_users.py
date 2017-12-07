@@ -1,8 +1,11 @@
 from openerp.addons.base.res import res_users
 from openerp import models, fields, api, exceptions, _
-import facebook
 from fb_config import FACEBOOK_VERSION
 import logging
+try:
+    import facebook
+except ImportError:
+    pass
 
 _logger = logging.getLogger(__name__)
 # todo should be accessible to user in group facebook admin
