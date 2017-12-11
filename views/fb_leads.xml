@@ -79,7 +79,6 @@
                         <field name="province" readonly="1"/>
                         <field name="country" readonly="1"/>
                         <field name="post_code" readonly="1"/>
-                        <field name="signup_date" readonly="1"/>
                     </group>
                     <field colspan="4" name="lead_ref_ids" nolabel="1" widget="one2many_list">
                         <form string="lead ref info">

@@ -131,8 +131,9 @@ class FbCampaign(models.Model):
                                'leadgen_form_id': self.leadgen_form.id,
                                'data': str(lead),
                                'created_time': lead_created_time}
+            lead_entry_dict['lead_ref_ids'] = ref_values_dict
 
-            lead_base = self.env['fb.lead.base'].create(lead_entry_dict, ref_values_dict)
+            lead_base = self.env['fb.lead.base'].create(lead_entry_dict)
 
         # update lastLeadCreated
         if lastLeadCreated > self.leadgen_form.lastLeadCreated:

@@ -27,7 +27,6 @@ class FbLeadBase(models.Model):
     _order = 'last_name'
     name = fields.Char(compute='_compute_name')
 
-    signup_date = fields.Date('Signup Date')
     last_name = fields.Char('Last Name')
     first_name = fields.Char('First Name')
 
@@ -45,16 +44,13 @@ class FbLeadBase(models.Model):
         ('duplicate', 'Duplicate'),
         ('qualified', 'Qualified'),
         ('rejected', 'Rejected'),
-    ], default='validate', string='Status', readonly=True, copy=False, help="Gives the status of the leads.\
-              \nThe exception status is automatically set when a cancel operation occurs \
-              in the invoice validation (Invoice Exception) or in the picking list process (Shipping Exception).\nThe 'Waiting Schedule' status is set when the invoice is confirmed\
-               but waiting for the scheduler to run on the order date.", select=True)
+    ], default='validate', string='Status', readonly=True, copy=False, help="Gives the status of the leads." , select=True)
 
     lead_ref_ids = fields.One2many(
         comodel_name='fb.lead.ref',
         inverse_name='lead_base_id',
-        string='leads parents',
-        readonly=True)
+        string='Lead_ref',
+        readonly=True, required=True)
 
     lead_child_ids = fields.One2many(
         comodel_name='fb.lead.child', string=u"Lead Childs", compute='_compute_childs_ids')
@@ -95,45 +91,51 @@ class FbLeadBase(models.Model):
             toto = self.lead_ref_ids.mapped('lead_child_ids')
             record.lead_child_ids = toto.ids
 
-    @api.multi
-    def create(self, values, ref_values_dict,  context=None):
-        email = values.pop('email', None)
+    @api.model  # todo tester
+    # def create(self, vals, ref_values_dict, context=None):
+    def create(self, vals):
+        email = vals.pop('email', None)
+        ref_values_dict = vals.pop('lead_ref_ids', None)
 
         # set pattern format to keep alphanumerics, dot, underscore, minus , trait long et court
         pattern = re.compile(ur'[^\.\_\w\s\u2014\u2013-]', re.U)
 
-        base_fields = {k: re.sub(pattern, '', v) for k, v in values.items() if self._fields.get(k)}
+        base_fields = {k: re.sub(pattern, '', v) for k, v in vals.items() if self._fields.get(k)}
 
-        specific_fields = [(0, 0, {'name': k, 'value': values[k]}) for k, v in values.items()
+        specific_fields = [(0, 0, {'name': k, 'value': vals[k]}) for k, v in vals.items()
                            if not self._fields.get(k)]
 
-        # todo a tester rendu ici
         lead_dup_ids = self.env['fb.lead.base'].search([('email', '=', email)])
         merge = False
         if lead_dup_ids:
             state = 'duplicate'
             for record in lead_dup_ids:
-                dup_fields={k: record._fields[k].convert_to_read(record[k], True) for k in base_fields.keys()}
+                dup_fields = {k: record._fields[k].convert_to_read(record[k], True) for k in base_fields.keys()}
                 if dup_fields == base_fields:
                     merge = True
-                    if len(lead_dup_ids) == 1:
-                        state = 'validate'
                     break # only one merge is plausible
-            lead_dup_ids.write({'state': state})
+                if state == 'duplicate':
+                        lead_dup_ids.write({'state': state})   # todo gestion des states : si reject do not change
         else:
             state = 'validate'
 
         base_fields['state'] = state
         base_fields['email'] = email
-
-        ref_values_dict['lead_child_ids'] = specific_fields
-
-        if merge:
-            ref_values_dict['lead_base_id'] = record.id
-        else:
-            record = super(FbLeadBase, self).create(base_fields)
-            ref_values_dict['lead_base_id'] = record.id
-
-            self.env['fb.lead.ref'].create(ref_values_dict)
+        if ref_values_dict:
+            ref_values_dict['lead_child_ids'] = specific_fields
+            base_fields['lead_ref_ids'] = [(0, 0, ref_values_dict)]
+            if merge:
+                ref_values_dict['lead_base_id'] = record.id
+                self.env['fb.lead.ref'].create(ref_values_dict)
+                # update state
+                if len(lead_dup_ids) > 1:
+                    record.write({'state': 'duplicate'})
+            else:
+                record = super(FbLeadBase, self).create(base_fields)
+        else: # import from csv
+            if merge:
+                record.write(base_fields)
+            else:
+                record = super(FbLeadBase, self).create(base_fields)
 
         return record

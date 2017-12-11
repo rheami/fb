@@ -23,18 +23,21 @@ class FbLeadRef(models.Model):
 
     @api.multi
     def unlink(self): # todo
-        # base_ids = [r.lead_base_id.id for r in self if r.lead_base_id.lead_ref_ids == r]
-        # data_ids = [r.lead_data_id.id for r in self]
 
-        result = super(FbLeadRef, self).unlink()
-        # if result:
-        #     base_ids.unlink()
-        #     data_ids.unlink()
+        ref_ids = set(self.ids)
+        data_ids = self.mapped('lead_data_id')
+        base_ids = self.mapped('lead_base_id')
+        base_to_del = []
+
+        for b in base_ids:
+            if b.lead_ref_ids:
+                if set(b.lead_ref_ids.ids).issubset(ref_ids):
+                    base_to_del.append(b.id)
+            else:
+                base_to_del.append(b.id)
+
+        rec_base_ids = self.env['fb.lead.base'].browse(base_to_del)
+        result = data_ids.unlink()
+        if result:
+            result = rec_base_ids.unlink()
         return result
-
-    @api.multi
-    def create(self, values,  context=None):
-        lead_data = self.env['fb.lead.data'].create(values)
-        values['lead_data_id']=lead_data.id
-        record = super(FbLeadRef, self).create(values)
-        return record
