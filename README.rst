@@ -2,16 +2,10 @@
    :target: http://www.gnu.org/licenses/agpl-3.0-standalone.html
    :alt: License: AGPL-3
 
-========================
-Projet FGC-Media
-Prospect Leads
-========================
+Facebook Leads
+==============
 
-Module Perso pour FGC Media.
+Outil de gestions des campagnes Facebook et vente des leads.
 
-Usage
-=====
-
-To use this module, you need to:
-
-#. Faire une description.
+Dépendances : facebook-sdk version 3 :
+pip install -e git+https://github.com/mobolic/facebook-sdk.git#egg=facebook-sdk
