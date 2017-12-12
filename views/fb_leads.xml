@@ -95,7 +95,7 @@
                         <form string="Specific fields">
                             <group col="4">
                                 <field name="lead_ref_id" />
-                                <field name="name" />
+                                <field name="question_id" />
                                 <field name="value" />
                             </group>
                         </form>

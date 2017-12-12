@@ -22,7 +22,7 @@ class FbLeadRef(models.Model):
     ]
 
     @api.multi
-    def unlink(self): # todo
+    def unlink(self):
 
         ref_ids = set(self.ids)
         data_ids = self.mapped('lead_data_id')
