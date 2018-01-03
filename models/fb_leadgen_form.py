@@ -13,10 +13,23 @@ class FbLeadgenForm(models.Model):
     leads_count = fields.Char(string='Leads Counts', help='Actual Leads in the facebook leadsgen form')
     lastLeadCreated = fields.Integer(default=0, help='Created Time of last downloaded lead (epoch format)')
     campaign_id = fields.Many2one('fb.campaign', readonly=True)
+
+    # questions_ids = fields.One2many(
+    #     comodel_name='fb.question',
+    #     inverse_name='leadgen_form_id',
+    #     string='Questions',
+    #     readonly=True)
+
+    questions_ids = fields.One2many(
+        comodel_name='fb.question',
+        inverse_name='leadgen_form_id',
+        string='Questions',
+        readonly=True)
+
     lead_ref_ids = fields.One2many(
         comodel_name='fb.lead.ref',
         inverse_name='leadgen_form_id',
-        string='leads associate to the facebook form',
+        string='Leads',
         readonly=True)
 
     _sql_constraints = [
@@ -33,3 +46,13 @@ class FbLeadgenForm(models.Model):
                 name = '%s <%s>' % (name, fbpage)
             result.append((record.id, name))
         return result
+
+    @api.multi
+    def write(self, vals):
+        return super(FbLeadgenForm, self).write(vals)
+
+    @api.model
+    def create(self, vals):
+        questions = vals.pop('questions')
+        vals['questions_ids'] = [(0, 0, v) for v in questions]
+        return super(FbLeadgenForm, self).create(vals)

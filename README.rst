@@ -8,4 +8,7 @@ Facebook Leads
 Outil de gestions des campagnes Facebook et vente des leads.
 
 Dépendances : facebook-sdk version 3 :
+
+en dev dans votre venv:
+ou en prod : de /usr/lib/python2.7/dist_
 pip install -e git+https://github.com/mobolic/facebook-sdk.git#egg=facebook-sdk

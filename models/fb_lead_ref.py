@@ -22,7 +22,7 @@ class FbLeadRef(models.Model):
     ]
 
     @api.multi
-    def unlink(self): # todo
+    def unlink(self):
 
         ref_ids = set(self.ids)
         data_ids = self.mapped('lead_data_id')
@@ -41,3 +41,16 @@ class FbLeadRef(models.Model):
         if result:
             result = rec_base_ids.unlink()
         return result
+
+    @api.model
+    def create(self, vals):
+        # self.env.context['leadgen_form_id'] = vals['leadgen_form_id']
+        leadgen_form_id = vals['leadgen_form_id']
+        self = self.with_context(leadgen_form_id=leadgen_form_id)
+        return super(FbLeadRef, self).create(vals)
+
+    @api.multi
+    def write(self, vals):
+        return super(FbLeadRef, self).write(vals)
+
+

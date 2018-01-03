@@ -3,7 +3,6 @@ from openerp import models, fields, api, _
 from openerp import exceptions
 import logging
 
-FACEBOOK_VERSION = '2.9'
 _logger = logging.getLogger(__name__)
 
 

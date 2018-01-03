@@ -1,0 +1,391 @@
+<?xml version="1.0" encoding="utf-8"?>
+<openerp>
+    <data>
+
+        <record id="fb_campaign_view_form" model="ir.ui.view">
+            <field name="name">Facebook campaign Form</field>
+            <field name="model">fb.campaign</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group string="Config of the facebook campaign">
+                        <field name="name" string="Campaign"/>
+                    </group>
+                    <group string="Leadgen Form">
+                        <div>
+                            <p>
+                                Choose Facebook leadgen form : "name of form &lt; name of facebook page &gt;
+                            </p>
+                        </div>
+                        <field name="leadgen_form" />
+                        <field name="date_release"/>
+                    </group>
+                    <separator string="Test"/>
+                    <div>
+                        <p>
+                            <label string="Lead Recovery Test:"/>
+                            <button name="get_one_lead" string="Get the lead"
+                                    class="oe_inline oe_link"
+                                    type="object" />
+                                    <!--attrs="{'invisible': [('state','=',False)]}"-->
+
+                            <button type="object" name="clear_lead" string="Clear" class="oe_inline oe_link"/>
+                        </p>
+                        <field name="lead_firstname"/>
+                        <field name="lead_lastname"/>
+                        <field name="lead_email"/>
+                        <field name="test_result"/>
+                    </div>
+                    <separator string="For DEV tests"/>
+                    <div>
+                        <button string="get leads" type="object" name="get_leads" class="oe_highlight"/>
+                    </div>
+                </form>
+            </field>
+        </record>
+
+        <record id="fb_campaing_view_tree" model="ir.ui.view">
+            <field name="name">Campaign List</field>
+            <field name="model">fb.campaign</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="name"/>
+                    <field name="leadgen_form"/>
+                    <field name="date_release"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_leads_view_form" model="ir.ui.view">
+            <field name="name">Lead Form</field>
+            <field name="model">fb.lead.base</field>
+            <field name="arch" type="xml">
+                <form>
+                    <header>
+                        <button string="Set to validate" type="object" name="validate_progressbar" attrs="{'invisible': [('state', '=', 'validate')]}"/>
+                        <button string="Set to qualified" type="object" name="qualified_progressbar" class="oe_highlight" attrs="{'invisible': ['|', ('state','=','qualified'), ('state','=','rejected')]}"/>
+                        <button string="Set to duplicate" type="object" name="duplicate_progressbar" attrs="{'invisible': ['|', ('state','=','duplicate'), ('state','=','qualified')]}"/>
+                        <button string="Set to rejected" type="object" name="rejected_progressbar" attrs="{'invisible': ['|', ('state','=','rejected'), ('state','=','qualified')]}"/>
+                        <field name="state" widget="statusbar"
+                               statusbar_visible="validate,qualified,duplicate,rejected"
+                               statusbar_colors='{"rejected_progressbar":"red","validate_progressbar":"blue", "qualified_progressbar":"blue", "duplicate_progressbar":"blue"}'/>
+                    </header>
+                    <group col="4">
+                        <field name="first_name" readonly="1"/>
+                        <field name="email" readonly="1"/>
+                        <field name="last_name" readonly="1"/>
+                        <field name="phone_number" readonly="1"/>
+                        <field name="street_address" readonly="1"/>
+                        <field name="city" readonly="1"/>
+                        <field name="province" readonly="1"/>
+                        <field name="country" readonly="1"/>
+                        <field name="post_code" readonly="1"/>
+                    </group>
+                    <field colspan="4" name="lead_ref_ids" nolabel="1" widget="one2many_list">
+                        <form string="lead ref info">
+                            <group col="4">
+                                <field name="id" string="lead_ref_id"/>
+                                <field name="lead_id"/>
+                                <field name="campaign_id"/>
+                                <field name="leadgen_form_id"/>
+                                <field name="created_time"/>
+                            </group>
+                        </form>
+                    </field>
+                    <field colspan="4" name="lead_child_ids" nolabel="1" widget="one2many_list">
+                        <form string="Specific fields">
+                            <group col="4">
+                                <field name="lead_ref_id" />
+                                <field name="question_id" />
+                                <field name="value" />
+                            </group>
+                        </form>
+                    </field>
+                </form>
+            </field>
+        </record>
+
+        <record id="fb_leads_view_tree" model="ir.ui.view">
+            <field name="name">Leads List</field>
+            <field name="model">fb.lead.base</field>
+            <field name="arch" type="xml">
+                <tree colors="red:state == 'duplicate';grey:state == 'rejected';black:state == 'validate';green:state == 'qualified'" delete="false">
+                    <field name="id"/>
+                    <field name="first_name"/>
+                    <field name="last_name"/>
+                    <field name="email"/>
+                    <field name="phone_number"/>
+                    <field name="street_address"/>
+                    <field name="city"/>
+                    <field name="province"/>
+                    <field name="country"/>
+                    <field name="post_code"/>
+                    <field name="lead_ref_ids"/>
+                    <field name="state"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_lead_view_search" model="ir.ui.view">
+            <field name="name">fb.lead.base.search</field>
+            <field name="model">fb.lead.base</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Lead">
+                    <field name="name" string="Name" filter_domain="['|', ('first_name','ilike',self), ('last_name','ilike',self)]"/>
+                    <field name="email" string="Email" filter_domain="[('email','ilike',self)]"/>
+                    <field name="province" string="State" filter_domain="[('state','ilike',self)]"/>
+                    <field name="country" />
+                    <field name="post_code" string="Zip Code" filter_domain="[('post_code','ilike',self)]"/>
+                    <field name="phone_number" string="Phone" filter_domain="[('phone_number','ilike',self)]"/>
+
+                    <field string="Campaign" name="lead_ref_ids" filter_domain="[('lead_ref_ids.campaign_id.name','ilike',self)]"/>
+                    <field string="LeadGen Form" name="lead_ref_ids" filter_domain="[('lead_ref_ids.leadgen_form_id.name','ilike',self)]"/>
+
+                    <filter string="Duplicate" name="duplicate" help="Show duplicates"
+                            domain="[('state', '=', 'duplicate')]"/>
+                    <filter string="Validate" name="validate" help="Show leads to validate"
+                            domain="[('state', '=', 'validate')]"/>
+                    <filter string="Qualified" name="qualified" help="Show Qualified Leads"
+                            domain="[('state', '=', 'qualified')]"/>
+                    <filter string="Rejected" name="rejected" help="Show Rejected Leads"
+                            domain="[('state', '=', 'rejected')]"/>>
+                    <separator/>
+                    <group expand="1" string="Group By">
+                        <filter string="Type" name="state" domain="[]" context="{'group_by':'state'}"/>
+                        <!--<filter string="Formulaire" name="state" domain="[]" context="{'group_by':'state'}"/>-->
+                        <!--<filter string="Campagne" name="lead_ref_ids" domain="[]" context="{'group_by':'lead_ref_ids.campaign_id'}"/>-->
+                        <!--<filter name="group_by_date" string="Date" domain="[]" context="{'group_by':'created_time'}"/>-->
+                    </group>
+                </search>
+            </field>
+        </record>
+
+        <record id="fb_leads_data_view_tree" model="ir.ui.view">
+            <field name="name">FB Leads List</field>
+            <field name="model">fb.lead.data</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="data"/>
+                    <field name="created_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_lead_data_view_search" model="ir.ui.view">
+            <field name="name">fb.lead.data.search</field>
+            <field name="model">fb.lead.data</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Lead">
+                    <field name="data" string="Data" filter_domain="[('data','ilike',self)]"/>
+                </search>
+            </field>
+        </record>
+
+        <record id="fb_lead_child_view_tree" model="ir.ui.view">
+            <field name="name">Leads specific fields</field>
+            <field name="model">fb.lead.child</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="lead_ref_id"/>
+                    <field name="question_id"/>
+                    <field name="value"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_leads_ref_view_tree" model="ir.ui.view">
+            <field name="name">fb_leads_ref_view_tree</field>
+            <field name="model">fb.lead.ref</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="lead_id"/>
+                    <field name="campaign_id"/>
+                    <field name="leadgen_form_id"/>
+                    <field name="lead_base_id"/>
+                    <field name="lead_child_ids"/>
+                    <field name="created_time"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_leadgen_view_tree" model="ir.ui.view">
+            <field name="name">FB Survey forms</field>
+            <field name="model">fb.leadgen_form</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="name"/>
+                    <field name="leadgen_form_id"/>
+                    <field name="fb_page"/>
+                    <field name="fb_page_name"/>
+                    <field name="status"/>
+                    <field name="leads_count"/>
+                    <field name="lastLeadCreated"/>
+                    <field name="campaign_id"/>
+                    <field name="questions_ids"/>
+                    <field name="lead_ref_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_leadgen_view_form" model="ir.ui.view">
+            <field name="name">FB Survey form</field>
+            <field name="model">fb.leadgen_form</field>
+            <field name="arch" type="xml">
+                <form>
+                    <group col="4">
+                        <field string='id' name="id"/>
+                        <field string='name' name="name"/>
+                        <field string='leadgen_form_id' name="leadgen_form_id"/>
+                        <field string='fb_page_name' name="fb_page_name"/>
+                        <field string='fb_page_name' name="fb_page_name"/>
+                        <field string='status' name="status"/>
+                        <field string='Last lead created' name="lastLeadCreated"/>
+                        <field string='Campaign' name="campaign_id"/>
+                    </group>
+
+                    <field string='questions' name="questions_ids"/>
+                    <field string='ref' name="lead_ref_ids"/>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="fb_question_view_tree" model="ir.ui.view">
+            <field name="name">FB Questions List</field>
+            <field name="model">fb.question</field>
+            <field name="arch" type="xml">
+                <tree>
+                    <field name="id"/>
+                    <field name="key"/>
+                    <field name="label"/>
+                    <field name="type"/>
+                    <field name="lead_child_ids"/>
+                </tree>
+            </field>
+        </record>
+
+        <record id="fb_question_view_search" model="ir.ui.view">
+            <field name="name">fb.question.search</field>
+            <field name="model">fb.question</field>
+            <field name="priority" eval="8"/>
+            <field name="arch" type="xml">
+                <search string="Question">
+                    <field name="key" string="Question" filter_domain="['|', ('key','ilike',self), ('label','ilike',self)]"/>/>
+                    <separator/>
+                    <group expand="1" string="Group By">
+                        <filter string="Type" name="type" domain="[]" context="{'group_by':'type'}"/>
+                        <filter name="leadgen_form" string="Survey" domain="[]" context="{'group_by':'leadgen_form_id'}"/>
+                    </group>
+
+                </search>
+            </field>
+        </record>
+
+        <record id="fb_page_view_form" model="ir.ui.view">
+            <field name="name">fb.page.form</field>
+            <field name="model">fb.page</field>
+            <field name="type">form</field>
+            <field name="arch" type="xml">
+                <form>
+
+                    <group>
+                        <field name="name"/>
+                        <field name="page_id"/>
+                        <field name="leadgen_ids" widget="one2many"/>
+                    </group>
+
+                </form>
+            </field>
+        </record>
+
+        <record id="fb_config_view_form" model="ir.ui.view">
+            <field name="name">Facebook Configuration</field>
+            <field name="model">fb.config</field>
+            <field name="arch" type="xml">
+                <form>
+                    <div class="oe_right">
+                        <button type="object"
+                                name="update_facebook_pages"
+                                string="Update your facebook page and leadgen form"/>
+                    </div>
+                    <fields name="leadgen_forms_ids"/>
+                    <group>
+                        <group>
+                            <field name="new_user_id"/>
+                        </group>
+                    </group>
+                    <footer>
+                        <p>
+                            <label string="When new facebook page with leadgen form are create you must update :"/>
+                        </p>
+                        <button type="object" name="update_facebook_pages"
+                                string="Update your facebook page and leadgen form"
+                                icon="gtk-execute"
+                                class="oe_hightligth"/>
+                        <button special="cancel" string="Cancel"/>
+                    </footer>
+                </form>
+            </field>
+        </record>
+
+        <!-- ACTION ELEMENTS -->
+
+        <!--<act_window id="fb_configur_action"-->
+            <!--name="Facebook Configuration"-->
+            <!--src_model="leadgen_forms_ids" res_model="fb.config"-->
+            <!--view_mode="form" target="new" multi="True"/>-->
+
+        <act_window id="fb_config_action" name="Facebook Configuration" res_model="fb.config"/>
+        <act_window id="fb_lead_ref_action" name="lead_ref_action" res_model="fb.lead.ref"/>
+        <act_window id="fb_leadgen_action" name="Facebook forms" res_model="fb.leadgen_form"/>
+        <act_window id="fb_page_action" name="Facebook pages" res_model="fb.page"/>
+        <record id="fb_lead_data_action" model="ir.actions.act_window">
+            <field name="name">Leads data</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fb.lead.data</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="fb_lead_data_view_search"/>
+        </record>
+        <act_window id="fb_lead_child_action" name="Specific fields" res_model="fb.lead.child"/>
+        <act_window id="fb_campaign_action" name="Facebook Campaign" res_model="fb.campaign"/>
+        <record id="fb_lead_action" model="ir.actions.act_window">
+            <field name="name">Liste des Leads</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fb.lead.base</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="fb_lead_view_search"/>
+        </record>
+        <record id="fb_question_action" model="ir.actions.act_window">
+            <field name="name">Liste des Questions</field>
+            <field name="type">ir.actions.act_window</field>
+            <field name="res_model">fb.question</field>
+            <field name="view_type">form</field>
+            <field name="search_view_id" ref="fb_question_view_search"/>
+        </record>
+
+        <!-- MENU ELEMENTS -->
+
+        <!-- Left menu categories-->
+        <menuitem name="Facebook Campaigns" id="menu_fb" parent="base.marketing_menu" sequence="25" groups="base.group_survey_user"/>
+        <menuitem name="Configuration" id="base.menu_marketing_config_root" parent="base.marketing_menu" sequence="30" />
+
+        <!-- Left menu elements: Facebook Campaigns -->
+        <menuitem name="Campaigns" id="menu_fb_campaign_form" action="fb_campaign_action" parent="menu_fb" sequence="1"/>
+        <menuitem name="Leads" id="menu_lead_result" action="fb_lead_action" parent="menu_fb" sequence="2"/>
+
+        <!-- Left menu elements: Technical Configuration -->
+        <menuitem name="Facebook Surveys" id="menu_fb_configuration" parent="base.menu_marketing_config_root" groups="base.group_no_one" sequence="25" />
+        <menuitem name="Campaigns" id="menu_fb_campaign_form" action="fb_campaign_action" parent="menu_fb_configuration" sequence="1"/>
+        <menuitem name="Pages" id="menu_fb_page_form" action="fb_page_action" parent="menu_fb_configuration" sequence="2"/>
+        <menuitem name="Facebook leadgen forms" id="menu_fb_leadgen_forms_form" action="fb_leadgen_action" parent="menu_fb_configuration" sequence="3"/>
+        <menuitem name="Questions" id="menu_fb_question_form" action="fb_question_action" parent="menu_fb_configuration" sequence="4"/>
+        <menuitem name="Facebook leads data" id="menu_fb_lead_data_form" action="fb_lead_data_action" parent="menu_fb_configuration" sequence="5"/>
+        <menuitem name="Leads Ref Table" id="menu_fb_lead_ref_form" action="fb_lead_ref_action" parent="menu_fb_configuration" sequence="6"/>
+        <menuitem name="Specific fields" id="menu_fb_lead_child_form" action="fb_lead_child_action" parent="menu_fb_configuration" sequence="7"/>
+        <menuitem name="Facebook" id="facebook_configuration" parent="menu_fb_configuration" action="fb_config_action"/>
+    </data>
+</openerp>

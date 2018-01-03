@@ -69,7 +69,7 @@
             <field name="target">new</field>
         </record>
 
-        <menuitem name="Remove dup leads" id="menu_lead_merge" parent="fb_marketing_root"
+        <menuitem name="Remove dup leads" id="menu_lead_merge" parent="menu_fb"
                   action="lead_merge_action"/>
     </data>
 </openerp>
