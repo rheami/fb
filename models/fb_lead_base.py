@@ -91,8 +91,7 @@ class FbLeadBase(models.Model):
             toto = self.lead_ref_ids.mapped('lead_child_ids')
             record.lead_child_ids = toto.ids
 
-    @api.model  # todo tester
-    # def create(self, vals, ref_values_dict, context=None):
+    @api.model
     def create(self, vals):
         email = vals.pop('email', None)
         ref_values_dict = vals.pop('lead_ref_ids', None)
@@ -119,8 +118,6 @@ class FbLeadBase(models.Model):
         else:
             state = 'validate'
 
-        base_fields['state'] = state
-        base_fields['email'] = email
         if ref_values_dict:
             ref_values_dict['lead_child_ids'] = specific_fields
             base_fields['lead_ref_ids'] = [(0, 0, ref_values_dict)]
@@ -131,11 +128,20 @@ class FbLeadBase(models.Model):
                 if len(lead_dup_ids) > 1:
                     record.write({'state': 'duplicate'})
             else:
+                base_fields['state'] = state
+                base_fields['email'] = email
                 record = super(FbLeadBase, self).create(base_fields)
         else: # import from csv
-            if merge:
-                record.write(base_fields)
-            else:
+            if not merge:
+                base_fields['state'] = state
+                base_fields['email'] = email
                 record = super(FbLeadBase, self).create(base_fields)
+            # else: #  rien a faire le external id sera associé a ce record
 
         return record
+
+    @api.multi
+    def write(self, vals):
+        return super(FbLeadBase, self).write(vals)
+
+

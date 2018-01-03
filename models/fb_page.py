@@ -15,9 +15,11 @@ class FbPages(models.Model):
         readonly=False,
         help="Leadgen_Forms of the Facebook Page")
 
+    @api.model
     def create(self, vals):
         return super(FbPages, self).create(vals)
 
+    @api.multi
     def write(self, vals):
         return super(FbPages, self).write(vals)
 

@@ -47,15 +47,19 @@ class ResUsers(models.Model):
         if self.oauth_facebook_long_access_token:
             graph = facebook.GraphAPI(access_token=self.oauth_facebook_long_access_token, version=FACEBOOK_VERSION)
             endpoint = 'me/accounts'
-            # result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count,questions},name')
-            result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count},name')
+            result = graph.get_object(id=endpoint, fields='leadgen_forms{name,status,leads_count,questions},name')
+            # todo : result = graph.get_all_connections(id=endpoint, connection_name='leadgen_forms{name,status,leads_count,questions},name')
+
             page_list = result['data']
 
             for page in page_list:
                 fb_page_id = page['id']
                 page['page_id'] = page.pop('id')
                 fb_page = self.env['fb.page'].search([('page_id', '=', fb_page_id)])
-                fb_page.write(page) if fb_page else self.env['fb.page'].create(page)
+                if fb_page:
+                    fb_page.write(page)
+                else:
+                    fb_page = self.env['fb.page'].create(page)
 
                 # then create fb.leadgen_form
                 leadgen_forms = page['leadgen_forms']['data'] # todo prendre en compte le paging (si plus de 25 leadgen_form)
@@ -63,8 +67,9 @@ class ResUsers(models.Model):
                     leadgen_form_id = leadgen_form['id']
                     leadgen_form['leadgen_form_id'] = leadgen_form.pop('id')
                     leadgen_form['fb_page'] = fb_page.id
+
                     fb_form = self.env['fb.leadgen_form'].search([('leadgen_form_id', '=', leadgen_form_id)])
-                    fb_form.write(leadgen_form) if fb_form else self.env['fb.leadgen_form'].create(leadgen_form)
+                    fb_form.write(leadgen_form) if fb_form else self.env['fb.leadgen_form'].create(leadgen_form) # todo importer les questions : et les enregistrer ici
         return
 
     @api.multi
@@ -87,6 +92,8 @@ class ResUsers(models.Model):
         endpoint = '{0}/leadgen_forms'.format(page_id)
         result = graph.get_object(id=endpoint, fields='id, name, status')
         data_list = result['data']
+
+
         return data_list
 
     def get_leads(self, leadgen_form_id, last_get=0):
